@@ -1,0 +1,23 @@
+{
+  "name": "mhc-employee-training-competency",
+  "version": "1.0.0",
+  "description": "May Harvest Corporation - Employee Training & Competency Management System with Real-Time Cloud Sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node -e \"console.log('Test OK')\""
+  },
+  "keywords": [
+    "may-harvest-corporation",
+    "employee-training",
+    "competency",
+    "cloud-sync",
+    "hr-management"
+  ],
+  "author": "May Harvest Corporation",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

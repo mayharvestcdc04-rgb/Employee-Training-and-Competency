@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Employee Training &amp; Competency</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#667085;--line:#e3e6ec;--accent:#2457d6;--accent-t:#fff;--ok:#157347;--bad:#c0392b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171f;--card:#1d222d;--text:#e8ebf2;--muted:#9aa3b5;--line:#2c3342;--accent:#6b93ff;--accent-t:#0d1220;--ok:#4cc38a;--bad:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171f;--card:#1d222d;--text:#e8ebf2;--muted:#9aa3b5;--line:#2c3342;--accent:#6b93ff;--accent-t:#0d1220;--ok:#4cc38a;--bad:#ff7b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:1.35rem;margin:4px 0 2px}
+.sub{color:var(--muted);margin:0 0 14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font-size:1.4rem}
+.stat span{color:var(--muted);font-size:.82rem}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sect{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 8px}
+label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--text);font:inherit}
+textarea{min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem}
+button.btn{background:var(--accent);color:var(--accent-t);border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font:inherit}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
+button.del{background:none;border:0;color:var(--bad);cursor:pointer;font:inherit;padding:2px 6px}
+button.lnk{background:none;border:0;color:var(--accent);cursor:pointer;font:inherit;padding:2px 6px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.bar input{flex:1;min-width:160px}.bar select{width:auto}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1600px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.88rem}
+th{color:var(--muted);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+.pill{padding:2px 9px;border-radius:99px;font-size:.78rem;border:1px solid currentColor}
+.Passed{color:var(--ok)}.Failed{color:var(--bad)}
+.msg{margin-top:10px;font-size:.88rem}.ok{color:var(--ok)}.err{color:var(--bad)}
+.empty{text-align:center;color:var(--muted);padding:28px}
+code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:.8rem}
+.thumb{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:zoom-in}
+#cprev{max-width:240px;max-height:200px;border-radius:8px;border:1px solid var(--line);margin-top:8px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;cursor:zoom-out}
+#modal img{max-width:100%;max-height:100%;border-radius:8px}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--text);margin:0}.chk input{width:auto}
+#records td:first-child,#records th:first-child{position:sticky;left:0;background:var(--card);z-index:1;box-shadow:1px 0 0 var(--line)}
+#records button.lnk,#pos button.lnk,#cq button.lnk,#ct button.lnk,#doc button.lnk,#acc button.lnk{border:1px solid var(--accent);border-radius:6px;padding:2px 10px;margin-right:4px}
+#pv{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;overflow:auto;padding:16px}
+#pv .box{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="appTitle">Employee Training &amp; Competency</h1>
+  <div id="docMeta" class="sub" style="margin:0 0 4px;font-size:.82rem"></div>
+  <p class="sub">Record trainings one by one, or bulk upload many at once. Powered by May Harvest Real-Time Cloud Sync & Database.</p>
+
+  <div class="stats">
+    <div class="stat"><b id="sRec">0</b><span>Training records</span></div>
+    <div class="stat"><b id="sEmp">0</b><span>Employees</span></div>
+    <div class="stat"><b id="sHrs">0</b><span>Total hours</span></div>
+    <div class="stat"><b id="sDone">0</b><span>Passed</span></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-t="dash" aria-selected="true">Dashboard</button>
+    <button class="tab" role="tab" data-t="pos" aria-selected="false">Position</button>
+    <button class="tab" role="tab" data-t="cal" aria-selected="false">Training Calendar</button>
+    <button class="tab" role="tab" data-t="add" aria-selected="false">Add Entry</button>
+    <button class="tab" role="tab" data-t="bulk" aria-selected="false">Bulk Upload</button>
+    <button class="tab" role="tab" data-t="records" aria-selected="false">Records</button>
+    <button class="tab" role="tab" data-t="tna" aria-selected="false">Training Needs Analysis</button>
+    <button class="tab" role="tab" data-t="cq" aria-selected="false">Competency Questionnaire</button>
+    <button class="tab" role="tab" data-t="ct" aria-selected="false">Competency Test</button>
+    <button class="tab" role="tab" data-t="ca" aria-selected="false">Competency Analysis</button>
+    <button class="tab" role="tab" data-t="teams" aria-selected="false">Appointment Letter</button>
+    <button class="tab" role="tab" data-t="nc" aria-selected="false">Non-Conformity</button>
+    <button class="tab" role="tab" data-t="doc" aria-selected="false">Document Control</button>
+    <button class="tab" role="tab" data-t="acc" aria-selected="false">Accounts</button>
+  </div>
+
+  <section id="records" class="card">
+    <div class="bar">
+      <input id="q" type="search" placeholder="Search name, ID, company, training, speaker…">
+      <select id="fCompany"><option value="">All companies</option></select>
+      <select id="fStatus"><option value="">All statuses</option><option>Passed</option><option>Failed</option></select>
+      <button class="btn sec" id="copyCsv">Copy as CSV</button>
+      <button class="btn sec" id="clearAll">Clear all</button>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>Actions</th><th>Type</th><th>Emp. ID</th><th>Company / Agency</th><th>Name</th><th>Dept.</th><th>Position</th><th>Training type</th><th>Training title</th><th>Outsourced speaker</th><th>Trainor</th><th>Date</th><th>Hrs</th><th>Score</th><th>Status</th><th>Cert.</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table></div>
+    <div id="recMsg" class="msg"></div>
+  </section>
+
+  <section id="add" class="card" hidden>
+    <div id="editBar" class="msg" hidden style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--accent);border-radius:8px"></div>
+    <div class="sect" style="margin-top:0">Employee</div>
+    <div class="grid">
+      <div><label>Employee type *</label><select id="empType"><option value="">Select type…</option><option>Newly hired</option><option>Existing employee</option></select></div>
+      <div><label>Employee ID</label><input id="empId"></div>
+      <div><label>Company / Agency *</label><select id="company"></select></div>
+      <div><label>Department *</label><select id="dept"></select></div>
+      <div id="deptBox" hidden><label>Others, please specify</label><input id="deptOther"></div>
+      <div><label>Position</label><select id="position"></select><div id="posInfo" class="sub" style="margin:4px 0 0;font-size:.78rem"></div></div>
+    </div>
+    <div class="grid" style="margin-top:12px;grid-template-columns:2fr 2fr 1fr">
+      <div><label>Surname *</label><input id="surname"></div>
+      <div><label>First name *</label><input id="first"></div>
+      <div><label>M.I. (optional)</label><input id="mi" maxlength="2"></div>
+    </div>
+    <div class="sect">Training</div>
+    <div class="grid">
+      <div><label>Training type *</label><select id="trainType"></select></div>
+      <div id="ttBox" hidden><label>Others, please specify</label><input id="trainTypeOther"></div>
+      <div><label>Training title *</label><input id="title"><label style="display:flex;gap:6px;align-items:center;margin:6px 0 0"><input type="checkbox" id="sameTitle" style="width:auto"> Same as the training type</label></div>
+      <div><label>Outsourced speaker</label><select id="speaker"></select></div>
+      <div id="otherBox" hidden><label>Others, please specify</label><input id="speakerOther"></div>
+      <div><label>Name of trainor</label><input id="trainer"></div>
+      <div><label>Date</label><input id="date" type="date"></div>
+      <div><label>Hours</label><input id="hours" type="number" min="0" step="0.5"></div>
+      <div><label>Actual score *</label><input id="actual" type="number" min="0" step="any"></div>
+      <div><label>Expected score *</label><input id="expected" type="number" min="0" step="any"></div>
+      <div><label>Result (auto: 70% existing, 50% newly hired)</label><input id="status" readonly placeholder="Auto-computed"><div id="scoreInfo" class="sub" style="margin:4px 0 0;font-size:.78rem"></div></div>
+    </div>
+    <div class="sect">Certificate &amp; remarks</div>
+    <label>Picture of certificate (JPG/PNG, resized automatically)</label>
+    <input type="file" id="certFile" accept="image/*">
+    <div id="certWrap" hidden><img id="cprev" alt="Certificate preview"><div><button class="del" id="certRm" type="button" style="padding-left:0">Remove picture</button></div></div>
+    <div style="margin-top:12px"><label>Remarks / certificate no.</label><input id="remarks"></div>
+    <div class="row">
+      <button class="btn" id="save">Save entry</button>
+      <button class="btn sec" id="reset">Clear form</button>
+    </div>
+    <div id="addMsg" class="msg"></div>
+  </section>
+
+  <section id="pos" class="card" hidden>
+    <p class="sub" style="margin-top:0">Define each position and tick the training types it requires. Saved positions appear in the Position dropdown on the Add entry tab.</p>
+    <div><label>Position *</label><input id="posName" placeholder="e.g. Warehouse Supervisor"></div>
+    <div class="grid" style="margin-top:12px">
+      <div><label>Department</label><select id="posDept"></select></div>
+      <div id="posDeptOtherBox" hidden><label>Others, please specify</label><input id="posDeptOther"></div>
+      <div id="posAreaBox" hidden><label id="posAreaLbl">Area *</label><select id="posArea"></select></div>
+    </div>
+    <div class="sect">Required training types</div>
+    <div id="posTypes" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))"></div>
+    <div class="row" style="margin-top:10px"><input id="newType" placeholder="Add a new training type" style="max-width:320px"><button class="btn sec" id="addType" type="button">Add</button></div>
+    <div id="typeMsg" class="msg"></div>
+    <div class="row"><button class="btn" id="posSave">Save position</button><button class="btn sec" id="posReset">Clear</button></div>
+    <div id="posMsg" class="msg"></div>
+    <div class="sect">Saved positions</div>
+    <div class="scroll"><table style="min-width:600px"><thead><tr><th>Actions</th><th>Position</th><th>Department / area</th><th>Required training types</th></tr></thead><tbody id="posBody"></tbody></table></div>
+  </section>
+
+  <section id="tna" class="card" hidden>
+    <p class="sub" style="margin-top:0">Compares each employee’s training records with the training types required for their position (set in the Position tab). The position is taken from the employee’s most recent entry that has one. A required training counts as done once there is a Passed record of that type.</p>
+    <div class="stats" id="tnaStats"></div>
+    <p class="sub" style="margin:0 0 10px"><b>Date/time of assessment:</b> <span id="tnaAsOf"></span> <span style="font-size:.8rem">(current date and time when this report is generated or refreshed)</span></p>
+    <div class="bar">
+      <input id="tq" type="search" placeholder="Search employee, ID, position…">
+      <select id="tCompany"></select>
+      <select id="tPos"></select>
+      <select id="tShow"><option value="all">All employees</option><option value="gaps">With training needs</option><option value="ok">Fully compliant</option></select>
+    </div>
+    <div class="scroll"><table style="min-width:1050px"><thead><tr><th>Employee</th><th>Company / Agency</th><th>Position</th><th>Progress</th><th>Training needs</th><th>Completed</th></tr></thead><tbody id="tnaBody"></tbody></table></div>
+  </section>
+
+  <section id="cq" class="card" hidden>
+    <div id="cqEditBar" class="msg" hidden style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--accent);border-radius:8px"></div>
+    <div class="sect" style="margin-top:0">Part 1 · Questionnaire details</div>
+    <div class="grid">
+      <div><label>Questionnaire code *</label><input id="cqCode"></div>
+      <div><label>Position *</label><select id="cqPos"></select></div>
+      <div><label>Department *</label><select id="cqDept"></select></div>
+      <div id="cqDeptOtherBox" hidden><label>Others, please specify</label><input id="cqDeptOther"></div>
+      <div id="cqAreaBox" hidden><label id="cqAreaLbl">Area *</label><select id="cqArea"></select></div>
+    </div>
+    <div class="sect">Part 2 · Written exam (10 multiple-choice questions)</div>
+    <details style="margin-bottom:12px"><summary style="cursor:pointer">Upload questions (CSV)</summary>
+      <p class="sub" style="margin-top:8px">First row headers: <code>Question, A, B, C, D, Answer</code>. Answer is the letter A–D. Only the first 10 rows are used.</p>
+      <input type="file" id="cqWFile" accept=".csv,.txt,text/csv">
+      <textarea id="cqWPaste" style="margin-top:8px;min-height:90px"></textarea>
+      <div class="row"><button class="btn sec" id="cqWSample" type="button">Insert sample</button><button class="btn sec" id="cqWLoad" type="button">Load into the 10 questions</button></div>
+    </details>
+    <div id="cqQs"></div>
+    <div class="sect">Part 3 · Practical skills</div>
+    <p class="sub" style="margin-top:0">Mark the level of skill and understanding: <b>1</b> – Not Passed · <b>2</b> – Needs Improvement · <b>3</b> – Satisfactory</p>
+    <details style="margin-bottom:12px"><summary style="cursor:pointer">Upload skills (CSV)</summary>
+      <p class="sub" style="margin-top:8px">First row headers: <code>Skill, Rating</code>. Rating (1, 2 or 3) is optional.</p>
+      <input type="file" id="cqSFile" accept=".csv,.txt,text/csv">
+      <textarea id="cqSPaste" style="margin-top:8px;min-height:90px"></textarea>
+      <div class="row"><button class="btn sec" id="cqSSample" type="button">Insert sample</button><button class="btn sec" id="cqSLoad" type="button">Load skills</button></div>
+    </details>
+    <div id="cqSk"></div>
+    <div class="row" style="margin-top:0"><button class="btn sec" id="cqAddSk" type="button">Add skill</button></div>
+    <div class="row"><button class="btn" id="cqSave">Save questionnaire</button><button class="btn sec" id="cqReset">Clear form</button></div>
+    <div id="cqMsg" class="msg"></div>
+    <div class="sect">Saved questionnaires</div>
+    <div class="scroll"><table style="min-width:760px"><thead><tr><th>Actions</th><th>Code</th><th>Position</th><th>Department / area</th><th>Written exam</th><th>Practical skills</th><th>Saved</th></tr></thead><tbody id="cqBody"></tbody></table></div>
+  </section>
+
+  <section id="ct" class="card" hidden>
+    <div class="sect" style="margin-top:0">Competency test · written exam</div>
+    <div class="grid">
+      <div><label>Surname *</label><input id="ctSur"></div>
+      <div><label>First name *</label><input id="ctFirst"></div>
+      <div><label>Middle name</label><input id="ctMid"></div>
+      <div><label>Employee number (auto)</label><input id="ctNo" readonly placeholder="Generated from records"></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div><label>Position *</label><select id="ctPos"></select></div>
+      <div id="ctQBox" hidden><label>Questionnaire *</label><select id="ctQ"></select></div>
+    </div>
+    <div id="ctInfo" class="sub" style="margin:8px 0 0"></div>
+    <div id="ctQs" style="margin-top:12px"></div>
+    <div class="row"><button class="btn" id="ctSubmit" hidden>Submit answers</button><button class="btn sec" id="ctReset">Clear</button></div>
+    <div id="ctMsg" class="msg"></div>
+    <div id="ctResult" class="card" hidden style="margin-top:12px"></div>
+    <div class="sect">Submitted tests &amp; assessor evaluation</div>
+    <div class="scroll"><table style="min-width:860px"><thead><tr><th>Actions</th><th>Date</th><th>Emp. no.</th><th>Name</th><th>Position / code</th><th>Written score</th><th>Practical assessment</th></tr></thead><tbody id="ctBody"></tbody></table></div>
+    <div id="asBox" class="card" hidden style="margin-top:14px;background:var(--bg)">
+      <h3 id="asTitle" style="margin:0 0 4px"></h3>
+      <div id="asScore" class="sub" style="margin:0"></div>
+      <div class="sect">1 · Comments on the written exam score and possible correction</div>
+      <textarea id="asWC" class="cm"></textarea>
+      <div class="sect">2 · Practical / skill test (Part 3)</div>
+      <p class="sub" style="margin-top:0">Mark the level of skill and understanding: <b>1</b> – Not Passed · <b>2</b> – Needs Improvement · <b>3</b> – Satisfactory</p>
+      <div id="asSk"></div>
+      <label style="margin-top:8px">Comments on the practical exam and possible training need for any deviation</label>
+      <textarea id="asPC" class="cm"></textarea>
+      <div class="grid" style="margin-top:12px">
+        <div><label>Assessor name *</label><input id="asName"></div>
+        <div><label>Assessor role *</label><select id="asRole"><option value="">Select role…</option><option>Team Leader</option><option>Department Head</option><option>Agency Coordinator</option><option>HR Assistant</option></select></div>
+      </div>
+      <div class="row"><button class="btn" id="asSave">Save evaluation</button><button class="btn sec" id="asCancel">Cancel</button></div>
+      <div id="asMsg" class="msg"></div>
+    </div>
+  </section>
+
+  <section id="ca" class="card" hidden>
+    <p class="sub" style="margin-top:0">Determines additional training per test: a written score below the pass mark, practical skills rated 1 (Not Passed) or 2 (Needs Improvement), and required position trainings not yet passed in the training records (matched by employee number).</p>
+    <div class="stats" id="caStats"></div>
+    <p class="sub" style="margin:0 0 10px"><b>Report generated:</b> <span id="caAsOf"></span> <span style="font-size:.8rem">(current date and time; each assessment’s own date/time is shown per employee)</span></p>
+    <div class="bar">
+      <input id="caQ" type="search" placeholder="Search name, number, position…">
+      <select id="caShow"><option value="all">All tests</option><option value="need">Additional training needed</option><option value="ok">No additional training</option><option value="pend">Pending assessment</option></select>
+      <label class="chk" style="margin:0">Written pass mark (%) <input id="caPass" type="number" min="1" max="100" value="70" style="width:72px"></label>
+    </div>
+    <div class="scroll"><table style="min-width:1100px"><thead><tr><th>Employee</th><th>Position / code</th><th>Written</th><th>Practical</th><th>Additional training required</th><th>Assessor comments</th></tr></thead><tbody id="caBody"></tbody></table></div>
+  </section>
+
+  <section id="doc" class="card" hidden>
+    <div class="sect" style="margin-top:0">Application title &amp; document details</div>
+    <p class="sub" style="margin-top:0">These appear at the top of the app.</p>
+    <div class="grid">
+      <div><label>Application title *</label><input id="dcTitle"></div>
+      <div><label>Document code</label><input id="dcCode" placeholder="e.g. HR-TRN-001"></div>
+      <div><label>Revision number</label><input id="dcRev" placeholder="e.g. 00"></div>
+      <div><label>Effectivity date</label><input id="dcEff" type="date"></div>
+    </div>
+    <div class="row"><button class="btn" id="dcSave">Save details</button></div>
+    <div id="dcMsg" class="msg"></div>
+    <div class="sect">Controlled files register (coding of downloadable files)</div>
+    <div class="grid">
+      <div><label>File code *</label><input id="flCode" placeholder="e.g. TRN-REC-001"></div>
+      <div><label>File / form title *</label><input id="flTitle"></div>
+      <div><label>Revision number</label><input id="flRev"></div>
+      <div><label>Effectivity date</label><input id="flEff" type="date"></div>
+    </div>
+    <div class="row"><button class="btn" id="flSave">Add file</button><button class="btn sec" id="flReset">Clear</button></div>
+    <div id="flMsg" class="msg"></div>
+    <div class="scroll" style="margin-top:12px"><table style="min-width:700px"><thead><tr><th>Actions</th><th>Code</th><th>File / form title</th><th>Rev. no.</th><th>Effectivity date</th></tr></thead><tbody id="flBody"></tbody></table></div>
+  </section>
+
+  <section id="acc" class="card" hidden>
+    <p class="sub" style="margin-top:0">A list of the people who use this tracker and their roles. This is a record only: the page has no sign-in, so roles are not enforced.</p>
+    <div class="grid">
+      <div><label>Full name *</label><input id="acName"></div>
+      <div><label>Username *</label><input id="acUser"></div>
+      <div><label>Email</label><input id="acMail" type="email"></div>
+      <div><label>Company / Agency</label><select id="acCo"></select></div>
+      <div><label>Role</label><select id="acRole"><option>Administrator</option><option>Encoder</option><option>Viewer</option></select></div>
+      <div><label>Status</label><select id="acStat"><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="row"><button class="btn" id="acSave">Add account</button><button class="btn sec" id="acReset">Clear</button></div>
+    <div id="acMsg" class="msg"></div>
+    <div class="scroll" style="margin-top:12px"><table style="min-width:800px"><thead><tr><th>Actions</th><th>Full name</th><th>Username</th><th>Email</th><th>Company / Agency</th><th>Role</th><th>Status</th></tr></thead><tbody id="acBody"></tbody></table></div>
+  </section>
+
+
+  <section id="teams" class="card" hidden>
+    <p class="sub" style="margin-top:0">Create and appoint the plant’s teams. Fill in the appointment details once, add the members of each team, then download the Appointment Memorandum (Word file) for one team or for all teams. Edited files open in Microsoft Word.</p>
+    <div class="sect" style="margin-top:0">Appointment details (used in every memorandum)</div>
+    <div class="grid">
+      <div><label>Company / Plant name</label><input id="tmCo" placeholder="e.g. May Harvest Corporation – Plant"></div>
+      <div><label>Memo date</label><input id="tmDate" type="date"></div>
+      <div><label>Effectivity date</label><input id="tmEff" type="date"></div>
+      <div><label>Memo no. prefix</label><input id="tmPre" placeholder="e.g. APT-2026"></div>
+      <div><label>Appointed by (name)</label><input id="tmBy"></div>
+      <div><label>Appointed by (position)</label><input id="tmByPos" placeholder="e.g. Plant Manager"></div>
+    </div>
+    <div class="row"><button class="btn" id="tmSaveSet">Save details</button><button class="btn sec" id="tmAll">Download all appointments (.doc)</button></div>
+    <div id="tmSetMsg" class="msg"></div>
+
+    <div class="sect">Teams &amp; appointments</div>
+    <div class="bar"><input id="tmQ" placeholder="Search teams or members…"><button class="btn sec" id="tmAddOpen">+ Add another team</button></div>
+    <div class="scroll"><table style="min-width:1000px"><thead><tr><th>Actions</th><th>No.</th><th>Team / role</th><th>Members</th><th>Memo date / Effectivity</th><th>Rev.</th><th>Appointment file</th></tr></thead><tbody id="tmBody"></tbody></table></div>
+
+    <div id="tmEd" hidden>
+      <div class="sect">Manage team: <span id="tmEdName" style="text-transform:none;color:var(--text)"></span></div>
+      <div class="grid" style="grid-template-columns:1fr">
+        <div><label>Team / role name *</label><input id="tmName"></div>
+        <div><label>Purpose and responsibilities (one per line)</label><textarea id="tmResp" class="cm" style="min-height:130px"></textarea></div>
+        <div><label>Required trainings for this team (tick all that apply)</label>
+          <div id="tmTypes" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:6px 14px;margin-top:6px"></div>
+          <div class="sub" style="font-size:.8rem;margin:6px 0 0">Ticks save automatically. A member with no Passed training record for a ticked training is highlighted in red. Records are matched to members by Surname and First name, so spell them as in the training records.</div></div>
+        <div><div class="grid"><div><label>Memo date for this letter</label><input id="tmMemoDate" type="date"></div><div><label>Effectivity date for this letter</label><input id="tmEffDate" type="date"></div></div><div class="sub" style="font-size:.8rem;margin:6px 0 0">Leave blank to use the default dates in Appointment details above.</div></div>
+      </div>
+      <div class="row"><button class="btn" id="tmSaveTeam">Save team</button><button class="btn sec" id="tmCloseEd">Close</button></div>
+      <div id="tmMsg" class="msg"></div>
+      <div class="sect">Members</div>
+      <div class="grid">
+        <div><label>Surname *</label><input id="mbSur"></div>
+        <div><label>First name *</label><input id="mbFirst"></div>
+        <div><label>Middle name (optional)</label><input id="mbMid"></div>
+        <div><label>Position / designation</label><input id="mbPos"></div>
+        <div><label>Department</label><select id="mbDept"></select></div>
+        <div><label>Role in the team (type or choose)</label><input id="mbRole" list="mbRoleList" value="Member"><datalist id="mbRoleList"><option>Team Leader</option><option>Assistant Team Leader</option><option>Member</option><option>Alternate</option><option>Secretary</option></datalist></div>
+        <div><label>Employee code (auto-generated from records)</label><input id="mbId" readonly placeholder="Auto-filled" style="opacity:.85"><div id="mbIdHint" class="sub" style="font-size:.76rem;margin:3px 0 0">Type the surname and first name to look it up.</div></div>
+        <div style="grid-column:1/-1"><label>Individual responsibility (optional)</label><textarea id="mbResp" class="cm" placeholder="Specific duties of this member in the team"></textarea></div>
+      </div>
+      <div class="row"><button class="btn" id="mbAdd">Add member</button><button class="btn sec" id="mbPick">Pick from training records</button><button class="btn sec" id="mbCancel" hidden>Cancel edit</button></div>
+      <div id="mbMsg" class="msg"></div>
+      <div class="scroll" style="margin-top:12px"><table style="min-width:1000px"><thead><tr><th>Actions</th><th>Name</th><th>Position</th><th>Department</th><th>Role</th><th>Individual responsibility</th><th>Required training status</th></tr></thead><tbody id="mbBody"></tbody></table></div>
+      <div class="sect">Revision history of this appointment letter</div>
+      <div class="grid">
+        <div><label>Rev. no.</label><input id="rvNo"></div>
+        <div><label>Date of revision</label><input id="rvDate" type="date"></div>
+        <div><label>Revised by</label><input id="rvBy"></div>
+        <div style="grid-column:1/-1"><label>Description of revision *</label><textarea id="rvDesc" class="cm" placeholder="e.g. Initial issuance / Added new member / Replaced team leader"></textarea></div>
+      </div>
+      <div class="row"><button class="btn" id="rvAdd">Add revision</button></div>
+      <div id="rvMsg" class="msg"></div>
+      <div class="scroll"><table style="min-width:700px"><thead><tr><th>Actions</th><th>Rev. no.</th><th>Date</th><th>Description of revision</th><th>Revised by</th></tr></thead><tbody id="rvBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="dash" class="card" hidden>
+    <div class="row" style="margin:0 0 10px;justify-content:space-between"><div class="sub" style="margin:0">Dashboard as of <b id="dashAsOf"></b></div><button class="btn sec" id="dashRefresh">Refresh</button></div>
+    <div id="dashBody"></div>
+  </section>
+
+  <section id="nc" class="card" hidden>
+    <p class="sub" style="margin-top:0">Register of non-conformities with root-cause analysis (6M), corrections and corrective actions. <b>Scan</b> logs conditions found in the records: failed trainings, required trainings not conducted, failed written and practical competency exams, and appointed team members without the required training. You can also add a manual non-conformity.</p>
+    <div class="stats" id="ncStats"></div>
+    <div id="ncPending" class="msg" style="margin:0 0 10px"></div>
+    <div class="bar">
+      <input id="ncQ" type="search" placeholder="Search NC no., name, details…">
+      <select id="ncFCat"></select>
+      <select id="ncFSt"><option value="">All statuses</option><option>Open</option><option>In progress</option><option>Closed</option><option value="__over">Overdue</option></select>
+      <button class="btn" id="ncScan">Scan records for non-conformities</button>
+      <button class="btn sec" id="ncAddMan">+ Add manual NC</button>
+    </div>
+    <div class="scroll"><table style="min-width:1200px"><thead><tr><th>Actions</th><th>NC no.</th><th>Category</th><th>Employee / subject and details</th><th>Detected</th><th>Schedule date</th><th>Status</th><th>Correction / Corrective action</th></tr></thead><tbody id="ncBody"></tbody></table></div>
+
+    <div id="ncEd" hidden>
+      <div class="sect">Non-conformity <span id="ncEdNo" style="text-transform:none;color:var(--text)"></span></div>
+      <div class="grid">
+        <div><label>Category</label><select id="ncCat"></select></div>
+        <div><label>Employee / subject *</label><input id="ncSubject"></div>
+        <div><label>Date/time detected</label><input id="ncDetected" readonly></div>
+        <div><label>Schedule date (target completion)</label><input id="ncSched" type="date"></div>
+        <div><label>Status</label><select id="ncStatus"><option>Open</option><option>In progress</option><option>Closed</option></select></div>
+      </div>
+      <div style="margin-top:10px"><label>Description of the non-conformity</label><textarea id="ncDetail" class="cm"></textarea></div>
+      <div class="sect">Root-cause analysis (6M)</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div><label>Man</label><textarea id="rcMan" class="cm" placeholder="People: knowledge, skills, awareness, attendance, supervision…"></textarea></div>
+        <div><label>Method</label><textarea id="rcMethod" class="cm" placeholder="Procedures, instructions, training program or assessment method…"></textarea></div>
+        <div><label>Material</label><textarea id="rcMaterial" class="cm" placeholder="Training materials, handouts, exam content, records…"></textarea></div>
+        <div><label>Machine</label><textarea id="rcMachine" class="cm" placeholder="Equipment, tools, facilities or systems used…"></textarea></div>
+        <div><label>Environment</label><textarea id="rcEnvironment" class="cm" placeholder="Workplace, venue, conditions, distractions…"></textarea></div>
+        <div><label>Time</label><textarea id="rcTime" class="cm" placeholder="Schedule, duration, deadlines, conflicts with production…"></textarea></div>
+      </div>
+      <div class="row"><button class="btn" id="ncSave">Save non-conformity</button><button class="btn sec" id="ncClose">Close panel</button></div>
+      <div id="ncMsg" class="msg"></div>
+
+      <div class="sect">Correction (immediate action to fix or contain the problem)</div>
+      <div class="grid">
+        <div style="grid-column:1/-1"><label>Correction *</label><textarea id="ncCorText" class="cm"></textarea></div>
+        <div><label>Responsible</label><input id="ncCorResp"></div>
+        <div><label>Schedule date</label><input id="ncCorDate" type="date"></div>
+        <div><label>Status</label><select id="ncCorSt"></select></div>
+      </div>
+      <div class="row"><button class="btn" id="ncCorAdd">Add correction</button></div>
+      <div id="ncCorMsg" class="msg"></div>
+      <div class="scroll"><table style="min-width:800px"><thead><tr><th>Actions</th><th>Correction</th><th>Responsible</th><th>Schedule date</th><th>Status</th></tr></thead><tbody id="ncCorBody"></tbody></table></div>
+
+      <div class="sect">Corrective action (action to remove the root cause and prevent recurrence)</div>
+      <div class="grid">
+        <div style="grid-column:1/-1"><label>Corrective action *</label><textarea id="ncActText" class="cm"></textarea></div>
+        <div><label>Responsible</label><input id="ncActResp"></div>
+        <div><label>Schedule date</label><input id="ncActDate" type="date"></div>
+        <div><label>Status</label><select id="ncActSt"></select></div>
+      </div>
+      <div class="row"><button class="btn" id="ncActAdd">Add corrective action</button></div>
+      <div id="ncActMsg" class="msg"></div>
+      <div class="scroll"><table style="min-width:800px"><thead><tr><th>Actions</th><th>Corrective action</th><th>Responsible</th><th>Schedule date</th><th>Status</th></tr></thead><tbody id="ncActBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="cal" class="card" hidden>
+    <p class="sub" style="margin-top:0">HR sets the target schedule for each required training and updates its status here. A training that is not completed by the end of its target month is logged as a non-conformity when you scan in the Non-Conformity tab. Statuses feed the Dashboard.</p>
+    <div class="stats" id="calStats"></div>
+    <div class="sect" style="margin-top:0">Schedule a training</div>
+    <div class="grid">
+      <div><label>Training type *</label><select id="calType"></select></div>
+      <div><label>Training title / topic</label><input id="calTitle" placeholder="Optional, e.g. GMP refresher batch 2"></div>
+      <div><label>Target date *</label><input id="calDate" type="date"></div>
+      <div><label>Target time</label><input id="calTime" type="time"></div>
+      <div><label>Target participants (position)</label><select id="calPos"></select></div>
+      <div><label>Trainer / speaker</label><input id="calTrainer"></div>
+      <div><label>Venue</label><input id="calVenue"></div>
+      <div><label>Status</label><select id="calStatus"></select></div>
+      <div><label>Actual date conducted</label><input id="calActual" type="date"></div>
+      <div style="grid-column:1/-1"><label>Remarks</label><textarea id="calRemarks" class="cm" placeholder="e.g. reason for postponement"></textarea></div>
+    </div>
+    <div class="row"><button class="btn" id="calSave">Save schedule</button><button class="btn sec" id="calReset">Clear</button><button class="btn sec" id="calLoad">Load required trainings from Position</button></div>
+    <div id="calMsg" class="msg"></div>
+    <div class="sect">Training calendar</div>
+    <div class="bar">
+      <input id="calQ" type="search" placeholder="Search training, trainer, venue…">
+      <input id="calFMonth" type="month" title="Filter by target month" style="width:auto">
+      <select id="calFType"></select>
+      <select id="calFSt"></select>
+    </div>
+    <div class="scroll"><table style="min-width:1250px"><thead><tr><th>Actions</th><th>Target date</th><th>Training</th><th>Participants</th><th>Trainer / venue</th><th>Status</th><th>Actual date</th><th>Remarks</th><th>Last updated</th></tr></thead><tbody id="calBody"></tbody></table></div>
+  </section>
+
+  <section id="bulk" class="card" hidden>
+    <p style="margin-top:0">Upload a <code>.csv</code> file or paste CSV text. First row must be headers:</p>
+    <p><code>EmployeeID, EmployeeType, Company, Surname, FirstName, MI, Department, DepartmentOther, Position, TrainingType, TrainingTypeOther, Training, OutsourcedSpeaker, SpeakerOther, Trainor, Date, Hours, ActualScore, ExpectedScore, Remarks</code></p>
+    <p class="sub">Required: EmployeeType (Newly hired or Existing employee), Company, Surname, FirstName, Department, TrainingType, ActualScore, ExpectedScore. Company must match the dropdown list. If Training (the title) is left blank, it is set equal to the training type. Position is optional but must match a position saved in the Position tab. Passed/Failed is computed automatically (70% existing, 50% newly hired); any Status column is ignored. If the speaker isn’t on the list, it’s saved under “Others”. Certificate pictures can’t be bulk uploaded; add them afterward with Edit. In Excel, use <b>Save As → CSV</b>.</p>
+    <input type="file" id="file" accept=".csv,.txt,text/csv">
+    <div style="margin-top:10px"><label>Or paste CSV here</label><textarea id="paste"></textarea></div>
+    <div class="row">
+      <button class="btn sec" id="sample">Insert sample template</button>
+      <button class="btn" id="preview">Preview</button>
+      <button class="btn" id="doImport" hidden>Import valid rows</button>
+    </div>
+    <div id="bulkMsg" class="msg"></div>
+    <div class="scroll" id="prevWrap" hidden><table style="min-width:700px"><thead><tr><th>#</th><th>Company</th><th>Name</th><th>Training</th><th>Status</th><th>Check</th></tr></thead><tbody id="prevBody"></tbody></table></div>
+  </section>
+</div>
+<div id="pv" hidden><div class="box" id="pvBox"></div></div>
+<div id="modal" hidden><img id="mimg" alt="Certificate"></div>
+
+<script>
+(function(){
+var KEY='training_records_v2', rows=[], editing=null, pending=[], curCert='';
+var PKEY='training_positions_v1', positions=[], posEditing=null;
+var AREAS={'Basic':['Hanging Area','Dirty Area','Byproduct Area','Clean Area'],'Warehouse':['Holding Room','Cold Storage','Dispatch']};
+var COMPANIES=['May Harvest Corporation','Workbridge Corporation','Multicareer Manpower Services','Top Jinzai Company, Inc.','BLGM Manpower Services','Omnichron Security Agency, Inc.'];
+var SPEAKERS=['May Harvest Corporation','EMHCO Groups of Companies','SGS Philippines','San Miguel Foods, Inc','Harvi Mijares Abangan Management Consulting','Grace Fabay','McDonalds Philippines','McDonalds International','JFC Groups','Trainovate'];
+var OTHERS='Others, please specify';
+var DEPTS=['Basic','Further','Blast','CCM','Warehouse','E&M','Quality','Scaler','Dry warehouse','PFRP','Utility','Canteen','Admin','Security','Production'];
+var TTYPES=['Company Code of Conduct','GMP and Personal Hygiene','Food Safety Culture','Animal Health and Welfare','Hazard Control Program','Food Defense','Food Fraud','Environmental Monitoring Program','Environmental Management System','Occupational Safety','Energy Management System','SQMS','SMETA','Product/Process Translation','QC Tools','Writing Non-Conformity','Establishing Goals','Risk Management Training','Internal Auditing','Integrated Management System','Control of Documented Information','FSSC 22000','Regulatory Compliance','Allergen Management','Microbiological Training','Cleaning and Sanitation Seminar','Safe Chemical Handling','Pest Management'];
+var BASE_N=TTYPES.length,CKEY='training_custom_types_v1';
+var F=['empId','empType','company','surname','first','mi','dept','deptOther','position','trainType','trainTypeOther','title','speaker','speakerOther','trainer','date','hours','actual','expected','status','remarks'];
+var $=function(i){return document.getElementById(i)};
+function opts(list,ph){return (ph?'<option value="">'+ph+'</option>':'')+list.map(function(x){return '<option>'+x.replace(/&/g,'&amp;')+'</option>'}).join('')}
+$('company').innerHTML=opts(COMPANIES,'Select company…');
+$('fCompany').innerHTML=opts(COMPANIES,'All companies');$('fCompany').options[0].text='All companies';
+$('speaker').innerHTML=opts(SPEAKERS.concat([OTHERS]),'Select speaker…');
+$('dept').innerHTML=opts(DEPTS.concat([OTHERS]),'Select department…');
+$('trainType').innerHTML=opts(TTYPES.concat([OTHERS]),'Select training type…');
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function nm(r){return r.surname+(r.first?', '+r.first:'')+(r.mi?' '+r.mi.replace(/\.$/,'')+'.':'')}
+function spk(r){return r.speaker===OTHERS?(r.speakerOther||'Others'):(r.speaker||'')}
+function dp(r){return r.dept===OTHERS?(r.deptOther||'Others'):(r.dept||'')}
+function tt(r){return r.trainType===OTHERS?(r.trainTypeOther||'Others'):(r.trainType||'')}
+function syncTitle(){var c=$('sameTitle').checked;if(c){var v=$('trainType').value;$('title').value=v===OTHERS?$('trainTypeOther').value.trim():v}$('title').readOnly=c}
+function grade(r){var a=parseFloat(r.actual),e=parseFloat(r.expected);if(!r.empType||isNaN(a)||!(e>0))return '';return a/e*100>=(r.empType==='Newly hired'?50:70)?'Passed':'Failed'}
+function scoreTxt(r){var a=parseFloat(r.actual),e=parseFloat(r.expected);if(isNaN(a)||!(e>0))return '';return esc(a+'/'+e)+' <span class="sub" style="font-size:.76rem">('+(Math.round(a/e*1000)/10)+'%)</span>'}
+function calc(){var r={empType:$('empType').value,actual:$('actual').value,expected:$('expected').value},s=grade(r);$('status').value=s;
+  var req=r.empType==='Newly hired'?50:70,a=parseFloat(r.actual),e=parseFloat(r.expected);
+  $('scoreInfo').textContent=!r.empType?'Select employee type to apply the passing score.':(isNaN(a)||!(e>0)?'Passing score: '+req+'%':(Math.round(a/e*1000)/10)+'% (passing: '+req+'%)')}
+
+function load(){try{var v=localStorage.getItem(KEY);rows=v?JSON.parse(v):[]}catch(e){rows=[]}if(!Array.isArray(rows))rows=[]}
+function loadPos(){try{var v=localStorage.getItem(PKEY);positions=v?JSON.parse(v):[]}catch(e){positions=[]}if(!Array.isArray(positions))positions=[]}
+function persistPos(){try{localStorage.setItem(PKEY,JSON.stringify(positions));return true}catch(e){$('posMsg').className='msg err';$('posMsg').textContent='Browser storage is blocked, so positions may not be kept.';return false}}
+function buildPosTypes(){if(!$('posDept').options.length)$('posDept').innerHTML=opts(DEPTS.concat([OTHERS]),'Select department…');$('posTypes').innerHTML=TTYPES.map(function(t){return '<label class="chk"><input type="checkbox" value="'+esc(t)+'"> '+esc(t)+'</label>'}).join('')}
+function togglePosDept(){var d=$('posDept').value,a=AREAS[d];$('posDeptOtherBox').hidden=d!==OTHERS;$('posAreaBox').hidden=!a;
+  if(a){$('posAreaLbl').textContent=d+' area *';$('posArea').innerHTML='<option value="">Select area…</option>'+a.map(function(x){return '<option>'+esc(x)+'</option>'}).join('')}}
+function posWhere(p){var d=p.dept===OTHERS?(p.deptOther||'Others'):(p.dept||'');return d?d+(p.area?' – '+p.area:''):''}
+function clearPos(){posEditing=null;$('posName').value='';$('posDept').value='';$('posDeptOther').value='';togglePosDept();[].forEach.call($('posTypes').querySelectorAll('input'),function(i){i.checked=false});$('posSave').textContent='Save position'}
+function fillPosSelect(keep){var cur=keep===undefined?$('position').value:keep,names=positions.map(function(p){return p.name});
+  if(cur&&names.indexOf(cur)<0)names.push(cur);
+  $('position').innerHTML='<option value="">Select position…</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('');
+  $('position').value=cur||'';showPosInfo()}
+function showPosInfo(){var p=positions.filter(function(x){return x.name===$('position').value})[0];
+  $('posInfo').textContent=p?((posWhere(p)?'Department: '+posWhere(p)+'. ':'')+(p.types.length?'Required for this position: '+p.types.join(', '):'No required training types set for this position.')):(positions.length?'':'No positions yet. Add them in the Position tab.')}
+function renderPos(){$('posBody').innerHTML=positions.length?positions.map(function(p){return '<tr><td style="white-space:nowrap"><button class="lnk" data-pe="'+p.id+'">Edit</button><button class="del" data-pd="'+p.id+'">Delete</button></td><td>'+esc(p.name)+'</td><td>'+esc(posWhere(p))+'</td><td>'+(p.types.length?esc(p.types.join(', ')):'<span class="sub">None</span>')+'</td></tr>'}).join(''):'<tr><td colspan="4" class="empty">No positions yet.</td></tr>'}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(rows));return true}catch(e){$('recMsg').className='msg err';$('recMsg').textContent='Browser storage is full or blocked, so changes may not be kept. Try removing some certificate pictures.';return false}}
+
+function show(t){if(t==='cal')calRender();if(t==='dash')dashRender();if(t==='nc')ncRender();if(t==='tna')tnaOpen();if(t==='cq')fillCqPos();if(t==='ct')ctOpen();if(t==='ca')caRender();['records','add','pos','tna','bulk','cq','ct','ca','doc','acc','teams','dash','nc','cal'].forEach(function(s){$(s).hidden=s!==t});
+  document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t)})}
+document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){show(b.dataset.t)}});
+
+function render(){
+  var q=$('q').value.toLowerCase().trim(), st=$('fStatus').value, co=$('fCompany').value;
+  var list=rows.filter(function(r){
+    if(st&&r.status!==st)return false;if(co&&r.company!==co)return false;
+    return !q||[r.empId,r.company,r.empType,nm(r),dp(r),r.position,tt(r),r.title,spk(r),r.trainer,r.remarks].join(' ').toLowerCase().indexOf(q)>-1});
+  $('tbody').innerHTML=list.length?list.map(function(r){
+    return '<tr><td style="white-space:nowrap"><button class="lnk" data-e="'+r.id+'">Edit</button><button class="del" data-d="'+r.id+'">Delete</button></td><td>'+esc(r.empType)+'</td><td>'+esc(r.empId)+'</td><td>'+esc(r.company)+'</td><td>'+esc(nm(r))+'</td><td>'+esc(dp(r))+'</td><td>'+esc(r.position)+'</td><td>'+esc(tt(r))+'</td><td>'+esc(r.title)+(r.remarks?'<div class="sub" style="margin:0;font-size:.76rem">'+esc(r.remarks)+'</div>':'')+'</td><td>'+esc(spk(r))+'</td><td>'+esc(r.trainer)+'</td><td>'+esc(r.date)+'</td><td>'+esc(r.hours)+'</td><td>'+scoreTxt(r)+'</td><td>'+(r.status?'<span class="pill '+esc(r.status)+'">'+esc(r.status)+'</span>':'')+'</td><td>'+(r.cert?'<img class="thumb" data-z="'+r.id+'" src="'+r.cert+'" alt="Certificate">':'')+'</td></tr>'}).join('')
+    :'<tr><td colspan="16" class="empty">No records yet. Use “Add entry” or “Bulk upload”.</td></tr>';
+  var emps={};rows.forEach(function(r){emps[(r.empId||nm(r)).toLowerCase()+'|'+r.company]=1});
+  $('sRec').textContent=rows.length;$('sEmp').textContent=Object.keys(emps).length;
+  $('sHrs').textContent=Math.round(rows.reduce(function(a,r){return a+(+r.hours||0)},0)*10)/10;
+  $('sDone').textContent=rows.filter(function(r){return r.status==='Passed'}).length;
+}
+$('q').oninput=render;$('fStatus').onchange=render;$('fCompany').onchange=render;
+
+$('tbody').onclick=function(e){
+  var t=e.target,d=t.dataset.d,ed=t.dataset.e,z=t.dataset.z;
+  if(z){var r0=rows.filter(function(x){return x.id===z})[0];$('mimg').src=r0.cert;$('modal').hidden=false}
+  if(d&&confirm('Delete this record?')){rows=rows.filter(function(r){return r.id!==d});persist();render()}
+  if(ed){var r=rows.filter(function(x){return x.id===ed})[0];if(!r)return;editing=ed;
+    fillPosSelect(r.position||'');F.forEach(function(f){$(f).value=r[f]||''});setCert(r.cert||'');toggleOther();calc();showPosInfo();$('sameTitle').checked=!!r.trainType&&r.title===tt(r);syncTitle();
+    $('save').textContent='Update entry';$('editBar').hidden=false;$('editBar').textContent='Editing: '+nm(r)+' — '+r.title+'. Change the fields below, then click Update entry.';$('addMsg').textContent='';show('add')}};
+$('modal').onclick=function(){$('modal').hidden=true};
+
+function toggleOther(){$('ttBox').hidden=$('trainType').value!==OTHERS;$('otherBox').hidden=$('speaker').value!==OTHERS;$('deptBox').hidden=$('dept').value!==OTHERS}
+$('speaker').onchange=toggleOther;$('dept').onchange=toggleOther;
+$('trainType').onchange=function(){toggleOther();syncTitle()};$('trainTypeOther').oninput=syncTitle;$('sameTitle').onchange=syncTitle;$('position').onchange=showPosInfo;
+$('empType').onchange=calc;$('actual').oninput=calc;$('expected').oninput=calc;
+
+function setCert(d){curCert=d;$('certWrap').hidden=!d;if(d)$('cprev').src=d;else $('certFile').value=''}
+$('certRm').onclick=function(){setCert('')};
+$('certFile').onchange=function(e){
+  var f=e.target.files[0],m=$('addMsg');if(!f)return;
+  if(!/^image\//.test(f.type)){m.className='msg err';m.textContent='Please choose an image file.';return}
+  var fr=new FileReader();
+  fr.onload=function(){var im=new Image();
+    im.onload=function(){var s=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');
+      c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);var x=c.getContext('2d');
+      x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+      setCert(c.toDataURL('image/jpeg',0.72));m.className='msg ok';m.textContent='Picture attached. Click Save entry to keep it.'};
+    im.onerror=function(){m.className='msg err';m.textContent='Could not read that image.'};im.src=fr.result};
+  fr.readAsDataURL(f)};
+
+function clearForm(){editing=null;F.forEach(function(f){$(f).value=''});$('status').value='';setCert('');$('sameTitle').checked=false;toggleOther();calc();syncTitle();showPosInfo();$('save').textContent='Save entry';$('editBar').hidden=true}
+$('reset').onclick=function(){clearForm();$('addMsg').textContent=''};
+$('save').onclick=function(){
+  var r={};F.forEach(function(f){r[f]=$(f).value.trim()});r.cert=curCert;
+  var m=$('addMsg');
+  if(!r.empType||!r.company||!r.dept||!r.surname||!r.first||!r.trainType||!r.title){m.className='msg err';m.textContent='Employee type, company, department, surname, first name, training type and training title are required.';return}
+  if(r.trainType===OTHERS&&!r.trainTypeOther){m.className='msg err';m.textContent='Please specify the training type under “Others”.';return}
+  if(r.trainType!==OTHERS)r.trainTypeOther='';
+  if(r.dept===OTHERS&&!r.deptOther){m.className='msg err';m.textContent='Please specify the department under “Others”.';return}
+  if(isNaN(parseFloat(r.actual))||!(parseFloat(r.expected)>0)){m.className='msg err';m.textContent='Enter the actual score and an expected score greater than 0.';return}
+  if(r.dept!==OTHERS)r.deptOther='';
+  r.status=grade(r);
+  if(r.speaker===OTHERS&&!r.speakerOther){m.className='msg err';m.textContent='Please specify the speaker under “Others”.';return}
+  if(r.speaker!==OTHERS)r.speakerOther='';
+  if(editing){rows=rows.map(function(x){return x.id===editing?Object.assign({id:editing},r):x});m.textContent='Entry updated.';show('records');$('recMsg').className='msg ok';$('recMsg').textContent='Entry updated.'}
+  else{r.id=uid();rows.unshift(r);m.textContent='Entry saved.'}
+  m.className='msg ok';persist();render();clearForm()};
+
+function parseCSV(t){
+  var out=[],row=[],f='',q=false,i=0,c;t=t.replace(/^\uFEFF/,'');
+  for(;i<t.length;i++){c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;
+    else if(c===','){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);f='';out.push(row);row=[]}
+    else f+=c}
+  if(f!==''||row.length){row.push(f);out.push(row)}
+  return out.filter(function(r){return r.some(function(x){return x.trim()!==''})})}
+function toCSV(list){
+  var h=['EmployeeID','EmployeeType','Company','Surname','FirstName','MI','Department','DepartmentOther','Position','TrainingType','TrainingTypeOther','Training','OutsourcedSpeaker','SpeakerOther','Trainor','Date','Hours','ActualScore','ExpectedScore','Status','Remarks'];
+  var q=function(v){v=String(v==null?'':v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  return [h.join(',')].concat(list.map(function(r){return F.map(function(f){return q(r[f])}).join(',')})).join('\n')}
+var ALIAS={empId:['employeeid','empid','id','employeeno'],empType:['employeetype','type','newlyhiredorexisting'],deptOther:['departmentother','deptother'],actual:['actualscore','actual','score'],expected:['expectedscore','expected','perfectscore','totalscore'],company:['company','agency','companyagency'],surname:['surname','lastname','familyname'],first:['firstname','first','givenname'],mi:['mi','middleinitial','m'],dept:['department','dept','division'],title:['training','trainingtitle','title','course'],position:['position','jobposition'],trainType:['trainingtype','typeoftraining'],trainTypeOther:['trainingtypeother','othertrainingtype'],speaker:['outsourcedspeaker','speaker','provider'],speakerOther:['speakerother','othersspeaker','otherspeaker'],trainer:['trainor','trainer','nameoftrainor','nameoftrainer'],date:['date','datecompleted','trainingdate'],hours:['hours','hrs','duration'],status:['status','trainingstatus','result'],remarks:['remarks','notes','certificate']};
+function pick(list,v){v=(v||'').trim().toLowerCase();return list.filter(function(x){return x.toLowerCase()===v})[0]||null}
+function normDate(s){s=(s||'').trim();if(!s)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+  var d=new Date(s);if(isNaN(d))return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function build(text){
+  var data=parseCSV(text);if(data.length<2)return null;
+  var hdr=data[0].map(function(h){return h.toLowerCase().replace(/[^a-z]/g,'')}),map={};
+  Object.keys(ALIAS).forEach(function(f){map[f]=hdr.findIndex(function(h){return ALIAS[f].indexOf(h)>-1})});
+  return data.slice(1).map(function(c,i){
+    var r={id:uid(),cert:''},errs=[];
+    F.forEach(function(f){r[f]=map[f]>-1?(c[map[f]]||'').trim():''});
+    var co=pick(COMPANIES,r.company);if(!r.company)errs.push('company missing');else if(!co)errs.push('unknown company');else r.company=co;
+    if(!r.surname)errs.push('surname missing');if(!r.first)errs.push('first name missing');if(r.trainType){var tp=pick(TTYPES,r.trainType);if(tp){r.trainType=tp;r.trainTypeOther=''}else if(r.trainType.toLowerCase().indexOf('other')===0&&!r.trainTypeOther){errs.push('specify training type')}else{if(r.trainType.toLowerCase().indexOf('other')!==0)r.trainTypeOther=r.trainType;r.trainType=OTHERS}}else errs.push('training type missing');
+    if(!r.title&&r.trainType)r.title=tt(r);if(!r.title)errs.push('training title missing');
+    if(r.position){var pp=pick(positions.map(function(p){return p.name}),r.position);if(pp)r.position=pp;else errs.push('unknown position')}
+    if(r.speaker){var sp=pick(SPEAKERS,r.speaker);if(sp){r.speaker=sp;r.speakerOther=''}else if(r.speaker.toLowerCase().indexOf('other')===0&&!r.speakerOther){errs.push('specify speaker')}else{if(r.speaker.toLowerCase().indexOf('other')!==0)r.speakerOther=r.speaker;r.speaker=OTHERS}}
+    var d=normDate(r.date);if(d===null)errs.push('bad date');else r.date=d;
+    var et=/^new/i.test(r.empType)?'Newly hired':/^exist/i.test(r.empType)?'Existing employee':'';if(!et)errs.push('type must be Newly hired/Existing employee');r.empType=et;
+    if(r.dept){var dd=pick(DEPTS,r.dept);if(dd){r.dept=dd;r.deptOther=''}else if(r.dept.toLowerCase().indexOf('other')===0&&!r.deptOther){errs.push('specify department')}else{if(r.dept.toLowerCase().indexOf('other')!==0)r.deptOther=r.dept;r.dept=OTHERS}}else errs.push('department missing');
+    if(isNaN(parseFloat(r.actual)))errs.push('actual score missing');if(!(parseFloat(r.expected)>0))errs.push('expected score missing');
+    r.status=grade(r);
+    if(r.hours!==''&&isNaN(+r.hours))errs.push('bad hours');
+    return {n:i+1,r:r,errs:errs}})}
+function readText(t){
+  var m=$('bulkMsg');pending=[];$('doImport').hidden=true;$('prevWrap').hidden=true;
+  if(!t.trim()){m.className='msg err';m.textContent='Upload a file or paste CSV text first.';return}
+  var res=build(t);if(!res||!res.length){m.className='msg err';m.textContent='No data rows found. Check that the first row has headers.';return}
+  var ok=res.filter(function(x){return!x.errs.length});pending=ok.map(function(x){return x.r});
+  $('prevBody').innerHTML=res.slice(0,200).map(function(x){var r=x.r;
+    return '<tr><td>'+x.n+'</td><td>'+esc(r.company)+'</td><td>'+esc(nm(r))+'</td><td>'+esc(r.title)+'</td><td>'+esc(r.status)+'</td><td class="'+(x.errs.length?'err':'ok')+'">'+(x.errs.length?esc(x.errs.join(', ')):'OK')+'</td></tr>'}).join('');
+  $('prevWrap').hidden=false;m.className='msg';
+  m.textContent=ok.length+' valid row(s), '+(res.length-ok.length)+' with problems (skipped).'+(res.length>200?' Showing first 200.':'');
+  $('doImport').hidden=!ok.length}
+$('file').onchange=function(e){var f=e.target.files[0];if(!f)return;var fr=new FileReader();
+  fr.onload=function(){$('paste').value=fr.result;readText(fr.result)};
+  fr.onerror=function(){$('bulkMsg').className='msg err';$('bulkMsg').textContent='Could not read that file.'};fr.readAsText(f)};
+$('preview').onclick=function(){readText($('paste').value)};
+$('sample').onclick=function(){$('paste').value='EmployeeID,EmployeeType,Company,Surname,FirstName,MI,Department,DepartmentOther,Position,TrainingType,TrainingTypeOther,Training,OutsourcedSpeaker,SpeakerOther,Trainor,Date,Hours,ActualScore,ExpectedScore,Remarks\nE-001,Existing employee,May Harvest Corporation,Dela Cruz,Juan,A,Warehouse,,,Food Safety Culture,,,SGS Philippines,,Ana Reyes,2026-03-14,8,18,20,Cert. 2026-118\nE-002,Newly hired,Workbridge Corporation,Santos,Maria,,Others,Maintenance,,Others,Allergen Awareness,"Orientation, Level 1",Others,ABC Training Center,Ben Lim,2026-04-02,4,6,20,'};
+$('doImport').onclick=function(){
+  rows=pending.concat(rows);persist();render();
+  $('bulkMsg').className='msg ok';$('bulkMsg').textContent=pending.length+' record(s) imported.';
+  pending=[];$('doImport').hidden=true;$('prevWrap').hidden=true;$('paste').value='';$('file').value='';show('records')};
+
+$('copyCsv').onclick=function(){
+  var t=toCSV(rows),m=$('recMsg');
+  if(!rows.length){m.className='msg err';m.textContent='Nothing to export yet.';return}
+  var done=function(){m.className='msg ok';m.textContent='CSV copied (certificate pictures are not included). Paste it into Excel or Sheets.'};
+  var fb=function(){show('bulk');$('paste').value=t;$('bulkMsg').className='msg';$('bulkMsg').textContent='Clipboard blocked: the CSV is in the box above. Select all and copy it (don’t click Import).'};
+  try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}};
+$('clearAll').onclick=function(){if(rows.length&&confirm('Delete ALL records? This cannot be undone.')){rows=[];persist();render()}};
+
+$('posSave').onclick=function(){var m=$('posMsg'),name=$('posName').value.trim();
+  if(!name){m.className='msg err';m.textContent='Enter a position.';return}
+  var types=[].slice.call($('posTypes').querySelectorAll('input:checked')).map(function(i){return i.value});
+  var dept=$('posDept').value,deptOther=$('posDeptOther').value.trim(),area=AREAS[dept]?$('posArea').value:'';
+  if(dept===OTHERS&&!deptOther){m.className='msg err';m.textContent='Please specify the department under “Others”.';return}
+  if(AREAS[dept]&&!area){m.className='msg err';m.textContent='Select an area for '+dept+'.';return}
+  if(dept!==OTHERS)deptOther='';
+  var dup=positions.filter(function(p){return p.name.toLowerCase()===name.toLowerCase()&&p.id!==posEditing})[0];
+  if(dup){m.className='msg err';m.textContent='That position already exists. Edit it from the list below.';return}
+  if(posEditing){var old=positions.filter(function(p){return p.id===posEditing})[0];
+    if(old&&old.name!==name){rows.forEach(function(r){if(r.position===old.name)r.position=name});persist();render()}
+    positions=positions.map(function(p){return p.id===posEditing?{id:p.id,name:name,dept:dept,deptOther:deptOther,area:area,types:types}:p});m.textContent='Position updated.'}
+  else{positions.push({id:uid(),name:name,dept:dept,deptOther:deptOther,area:area,types:types});m.textContent='Position saved.'}
+  m.className='msg ok';persistPos();clearPos();renderPos();fillPosSelect()};
+function loadCustomTypes(){var c=[];try{var v=localStorage.getItem(CKEY);c=v?JSON.parse(v):[]}catch(e){c=[]}
+  if(Array.isArray(c))c.forEach(function(t){if(typeof t==='string'&&TTYPES.indexOf(t)<0)TTYPES.push(t)});buildTypeSelect()}
+function buildTypeSelect(){var cur=$('trainType').value;$('trainType').innerHTML=opts(TTYPES.concat([OTHERS]),'Select training type…');$('trainType').value=cur}
+$('addType').onclick=function(){var m=$('typeMsg'),v=$('newType').value.trim().replace(/\s+/g,' ');
+  if(!v){m.className='msg err';m.textContent='Type the new training type first.';return}
+  var ex=TTYPES.filter(function(t){return t.toLowerCase()===v.toLowerCase()})[0];
+  if(ex){m.className='msg err';m.textContent='“'+ex+'” is already in the list.';return}
+  TTYPES.push(v);try{localStorage.setItem(CKEY,JSON.stringify(TTYPES.slice(BASE_N)))}catch(e){}
+  var ticked=[].slice.call($('posTypes').querySelectorAll('input:checked')).map(function(i){return i.value});
+  buildPosTypes();[].forEach.call($('posTypes').querySelectorAll('input'),function(i){i.checked=ticked.indexOf(i.value)>-1||i.value===v});
+  buildTypeSelect();$('newType').value='';m.className='msg ok';m.textContent='“'+v+'” added. It is ticked for this position and now also appears in the Training type dropdown on the Add entry tab.'};
+$('newType').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();$('addType').click()}};
+function tnaData(){var map={},order=[];
+  rows.forEach(function(r){var k=((r.empId||nm(r)).toLowerCase())+'|'+r.company;if(!map[k]){map[k]={recs:[],r:r};order.push(k)}map[k].recs.push(r)});
+  return order.map(function(k){var p=map[k],pos='';
+    p.recs.some(function(r){if(r.position){pos=r.position;return true}return false});
+    var def=positions.filter(function(x){return x.name===pos})[0],req=def?def.types:[],done=[],needs=[];
+    req.forEach(function(t){var rs=p.recs.filter(function(r){return r.trainType===t});
+      if(rs.some(function(r){return r.status==='Passed'}))done.push(t);else needs.push({t:t,retake:rs.length>0})});
+    return {r:p.r,pos:pos,def:def,req:req,done:done,needs:needs}})}
+function fillTnaFilters(){var cv=$('tCompany').value,pv=$('tPos').value;
+  $('tCompany').innerHTML='<option value="">All companies</option>'+COMPANIES.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
+  $('tPos').innerHTML='<option value="">All positions</option>'+positions.map(function(p){return '<option value="'+esc(p.name)+'">'+esc(p.name)+'</option>'}).join('')+'<option value="__none">No position set</option>';
+  $('tCompany').value=cv;$('tPos').value=pv;if($('tCompany').selectedIndex<0)$('tCompany').selectedIndex=0;if($('tPos').selectedIndex<0)$('tPos').selectedIndex=0}
+function tnaOpen(){fillTnaFilters();renderTna()}
+function renderTna(){$('tnaAsOf').textContent=fdt(new Date());
+  var data=tnaData(),q=$('tq').value.toLowerCase().trim(),co=$('tCompany').value,ps=$('tPos').value,sh=$('tShow').value;
+  var withReq=data.filter(function(d){return d.req.length}),gaps=withReq.filter(function(d){return d.needs.length}),total=0;
+  gaps.forEach(function(d){total+=d.needs.length});
+  $('tnaStats').innerHTML=[[data.length,'Employees'],[withReq.length-gaps.length,'Fully compliant'],[gaps.length,'With training needs'],[total,'Total training gaps'],[data.length-withReq.length,'No position / requirements']].map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'}).join('');
+  var list=data.filter(function(d){var r=d.r;
+    if(co&&r.company!==co)return false;
+    if(ps==='__none'){if(d.pos)return false}else if(ps&&d.pos!==ps)return false;
+    var gap=d.req.length>0&&d.needs.length>0,ok=d.req.length>0&&!d.needs.length;
+    if(sh==='gaps'&&!gap)return false;if(sh==='ok'&&!ok)return false;
+    return !q||[nm(r),r.empId,d.pos,r.company].join(' ').toLowerCase().indexOf(q)>-1});
+  $('tnaBody').innerHTML=list.length?list.map(function(d){var r=d.r,pct=d.req.length?Math.round(d.done.length/d.req.length*100):null,sm='<div class="sub" style="margin:0;font-size:.76rem">';
+    var posCell=d.pos?esc(d.pos)+(d.def&&posWhere(d.def)?sm+esc(posWhere(d.def))+'</div>':''):'<span class="sub">Not set</span>';
+    var prog=pct===null?'<span class="sub">'+(d.pos?(d.def?'No required trainings defined':'Position not defined'):'—')+'</span>':'<b class="'+(pct===100?'ok':'')+'">'+d.done.length+'/'+d.req.length+'</b> ('+pct+'%)';
+    var needs=!d.pos?'<span class="sub">Set a position on this employee’s entries</span>':!d.def?'<span class="sub">“'+esc(d.pos)+'” is not saved in Position</span>':!d.req.length?'<span class="sub">—</span>':!d.needs.length?'<span class="ok">None — all required trainings passed</span>':d.needs.map(function(n){return '<div>• '+esc(n.t)+' <span class="'+(n.retake?'err':'sub')+'" style="font-size:.76rem">— '+(n.retake?'retake (failed)':'not yet taken')+'</span></div>'}).join('');
+    return '<tr><td>'+esc(nm(r))+sm+esc(r.empId)+(r.empId&&r.empType?' · ':'')+esc(r.empType)+'</div></td><td>'+esc(r.company)+'</td><td>'+posCell+'</td><td>'+prog+'</td><td>'+needs+'</td><td>'+(d.done.length?esc(d.done.join(', ')):'<span class="sub">—</span>')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">No employees match. Add entries with a position to see their training needs.</td></tr>'}
+$('tq').oninput=renderTna;$('tCompany').onchange=renderTna;$('tPos').onchange=renderTna;$('tShow').onchange=renderTna;
+var dctl={title:'Employee Training & Competency',code:'',rev:'',eff:'',files:[]},accts=[],flEditing=null,acEditing=null;
+function fmtDate(s){var d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}
+function saveDoc(){try{localStorage.setItem('training_docctl_v1',JSON.stringify(dctl))}catch(e){}}
+function applyHeader(){$('appTitle').textContent=dctl.title;document.title=dctl.title;var b=[];if(dctl.code)b.push('Doc. code: '+dctl.code);if(dctl.rev)b.push('Rev. '+dctl.rev);if(dctl.eff)b.push('Effectivity: '+fmtDate(dctl.eff));$('docMeta').textContent=b.join(' \u00b7 ')}
+function loadDoc(){var v=null;try{v=JSON.parse(localStorage.getItem('training_docctl_v1')||'null')}catch(e){}
+  if(v&&typeof v==='object'){dctl.title=v.title||dctl.title;if(dctl.title==='Employee Training Compilation')dctl.title='Employee Training & Competency';dctl.code=v.code||'';dctl.rev=v.rev||'';dctl.eff=v.eff||'';dctl.files=Array.isArray(v.files)?v.files:[]}
+  else{dctl.files=[['TRN-REC-001','Training Records (CSV export)'],['TRN-BLK-001','Bulk Upload Template (CSV)'],['TRN-POS-001','Training per Position Matrix'],['TRN-TNA-001','Training Needs Analysis Report']].map(function(a){return {id:uid(),code:a[0],title:a[1],rev:'00',eff:''}});saveDoc()}
+  $('dcTitle').value=dctl.title;$('dcCode').value=dctl.code;$('dcRev').value=dctl.rev;$('dcEff').value=dctl.eff;applyHeader();renderDocs()}
+function renderDocs(){$('flBody').innerHTML=dctl.files.length?dctl.files.map(function(f){return '<tr><td style="white-space:nowrap"><button class="lnk" data-fe="'+f.id+'">Edit</button><button class="del" data-fd="'+f.id+'">Delete</button></td><td><b>'+esc(f.code)+'</b></td><td>'+esc(f.title)+'</td><td>'+esc(f.rev)+'</td><td>'+esc(f.eff?fmtDate(f.eff):'')+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">No files registered yet.</td></tr>'}
+$('dcSave').onclick=function(){var m=$('dcMsg'),t=$('dcTitle').value.trim();if(!t){m.className='msg err';m.textContent='Application title is required.';return}
+  dctl.title=t;dctl.code=$('dcCode').value.trim();dctl.rev=$('dcRev').value.trim();dctl.eff=$('dcEff').value;saveDoc();applyHeader();m.className='msg ok';m.textContent='Details saved.'};
+function clearFl(){flEditing=null;['flCode','flTitle','flRev','flEff'].forEach(function(i){$(i).value=''});$('flSave').textContent='Add file'}
+$('flSave').onclick=function(){var m=$('flMsg'),f={code:$('flCode').value.trim(),title:$('flTitle').value.trim(),rev:$('flRev').value.trim(),eff:$('flEff').value};
+  if(!f.code||!f.title){m.className='msg err';m.textContent='File code and title are required.';return}
+  var dup=dctl.files.filter(function(x){return x.code.toLowerCase()===f.code.toLowerCase()&&x.id!==flEditing})[0];
+  if(dup){m.className='msg err';m.textContent='That file code is already used.';return}
+  if(flEditing){dctl.files=dctl.files.map(function(x){return x.id===flEditing?Object.assign({id:x.id},f):x});m.textContent='File updated.'}else{f.id=uid();dctl.files.push(f);m.textContent='File added.'}
+  m.className='msg ok';saveDoc();renderDocs();clearFl()};
+$('flReset').onclick=function(){clearFl();$('flMsg').textContent=''};
+$('flBody').onclick=function(e){var t=e.target,d=t.dataset.fd,ed=t.dataset.fe;
+  if(d&&confirm('Delete this file from the register?')){dctl.files=dctl.files.filter(function(x){return x.id!==d});saveDoc();renderDocs()}
+  if(ed){var f=dctl.files.filter(function(x){return x.id===ed})[0];if(!f)return;flEditing=ed;$('flCode').value=f.code;$('flTitle').value=f.title;$('flRev').value=f.rev||'';$('flEff').value=f.eff||'';$('flSave').textContent='Update file';$('flMsg').textContent='';$('flCode').focus()}};
+function saveAcc(){try{localStorage.setItem('training_accounts_v1',JSON.stringify(accts))}catch(e){}}
+function loadAcc(){try{accts=JSON.parse(localStorage.getItem('training_accounts_v1')||'[]')}catch(e){accts=[]}if(!Array.isArray(accts))accts=[];$('acCo').innerHTML=opts(COMPANIES,'(none)');renderAcc()}
+function renderAcc(){$('acBody').innerHTML=accts.length?accts.map(function(a){return '<tr><td style="white-space:nowrap"><button class="lnk" data-ae="'+a.id+'">Edit</button><button class="del" data-ad="'+a.id+'">Delete</button></td><td>'+esc(a.name)+'</td><td>'+esc(a.user)+'</td><td>'+esc(a.mail)+'</td><td>'+esc(a.co)+'</td><td>'+esc(a.role)+'</td><td><span class="pill '+(a.stat==='Active'?'Passed':'Failed')+'">'+esc(a.stat)+'</span></td></tr>'}).join(''):'<tr><td colspan="7" class="empty">No accounts yet.</td></tr>'}
+function clearAc(){acEditing=null;['acName','acUser','acMail','acCo'].forEach(function(i){$(i).value=''});$('acRole').value='Encoder';$('acStat').value='Active';$('acSave').textContent='Add account'}
+$('acSave').onclick=function(){var m=$('acMsg'),a={name:$('acName').value.trim(),user:$('acUser').value.trim(),mail:$('acMail').value.trim(),co:$('acCo').value,role:$('acRole').value,stat:$('acStat').value};
+  if(!a.name||!a.user){m.className='msg err';m.textContent='Full name and username are required.';return}
+  var dup=accts.filter(function(x){return x.user.toLowerCase()===a.user.toLowerCase()&&x.id!==acEditing})[0];
+  if(dup){m.className='msg err';m.textContent='That username is already used.';return}
+  if(acEditing){accts=accts.map(function(x){return x.id===acEditing?Object.assign({id:x.id},a):x});m.textContent='Account updated.'}else{a.id=uid();accts.push(a);m.textContent='Account added.'}
+  m.className='msg ok';saveAcc();renderAcc();clearAc()};
+$('acReset').onclick=function(){clearAc();$('acMsg').textContent=''};
+$('acBody').onclick=function(e){var t=e.target,d=t.dataset.ad,ed=t.dataset.ae;
+  if(d&&confirm('Delete this account?')){accts=accts.filter(function(x){return x.id!==d});saveAcc();renderAcc()}
+  if(ed){var a=accts.filter(function(x){return x.id===ed})[0];if(!a)return;acEditing=ed;$('acName').value=a.name;$('acUser').value=a.user;$('acMail').value=a.mail||'';$('acCo').value=a.co||'';$('acRole').value=a.role;$('acStat').value=a.stat;$('acSave').textContent='Update account';$('acMsg').textContent='';$('acName').focus()}};
+var cqs=[],cqEditing=null;
+function cqNorm(s){return String(s).toLowerCase().replace(/[^a-z]/g,'')}
+function cqSave2(){try{localStorage.setItem('training_cq_v1',JSON.stringify(cqs))}catch(e){$('cqMsg').className='msg err';$('cqMsg').textContent='Browser storage is blocked, so this may not be kept.'}}
+function cqErr(t){var m=$('cqMsg');m.className='msg err';m.textContent=t}
+function cqOk(t){var m=$('cqMsg');m.className='msg ok';m.textContent=t}
+function fillCqPos(keep){var cur=keep===undefined?$('cqPos').value:keep,names=positions.map(function(p){return p.name});if(cur&&names.indexOf(cur)<0)names.push(cur);
+  $('cqPos').innerHTML='<option value="">'+(names.length?'Select position…':'No positions yet – add them in Position')+'</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('');$('cqPos').value=cur||''}
+function cqToggle(){var d=$('cqDept').value,a=AREAS[d];$('cqDeptOtherBox').hidden=d!==OTHERS;$('cqAreaBox').hidden=!a;
+  if(a){$('cqAreaLbl').textContent=d+' area *';$('cqArea').innerHTML='<option value="">Select area…</option>'+a.map(function(x){return '<option>'+esc(x)+'</option>'}).join('')}}
+$('cqDept').onchange=cqToggle;
+$('cqPos').onchange=function(){var p=positions.filter(function(x){return x.name===$('cqPos').value})[0];if(p&&p.dept){$('cqDept').value=p.dept;cqToggle();$('cqDeptOther').value=p.deptOther||'';if(AREAS[p.dept])$('cqArea').value=p.area||''}};
+function buildQs(qs){qs=qs||[];var h='';for(var i=0;i<10;i++){var x=qs[i]||{};
+  h+='<div class="card" style="margin-bottom:10px;background:var(--bg)"><label>Question '+(i+1)+' *</label><input data-i="'+i+'" data-f="q" value="'+esc(x.q)+'"><div class="grid" style="margin-top:8px">'
+  +['a','b','c','d'].map(function(k){return '<div><label>Option '+k.toUpperCase()+'</label><input data-i="'+i+'" data-f="'+k+'" value="'+esc(x[k])+'"></div>'}).join('')
+  +'<div><label>Correct answer</label><select data-i="'+i+'" data-f="ans"><option value="">Select…</option>'+['A','B','C','D'].map(function(k){return '<option'+(x.ans===k?' selected':'')+'>'+k+'</option>'}).join('')+'</select></div></div></div>'}
+  $('cqQs').innerHTML=h}
+function readQs(){var qs=[];for(var i=0;i<10;i++)qs.push({q:'',a:'',b:'',c:'',d:'',ans:''});
+  [].forEach.call($('cqQs').querySelectorAll('[data-i]'),function(el){qs[+el.dataset.i][el.dataset.f]=el.value.trim()});return qs}
+function buildSk(sk){sk=sk&&sk.length?sk:[{t:'',rate:''}];
+  $('cqSk').innerHTML=sk.map(function(s,i){return '<div class="card" style="margin-bottom:10px;background:var(--bg)"><label>Skill / task '+(i+1)+'</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input data-sk="'+i+'" value="'+esc(s.t)+'" style="flex:1;min-width:200px"><button class="del" type="button" data-rm="'+i+'">Remove</button></div><div style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap">'
+    +[['1','Not Passed'],['2','Needs Improvement'],['3','Satisfactory']].map(function(l){return '<label class="chk"><input type="radio" name="cqr'+i+'" value="'+l[0]+'"'+(String(s.rate)===l[0]?' checked':'')+'> '+l[0]+' – '+l[1]+'</label>'}).join('')+'</div></div>'}).join('')}
+function readSk(){var out=[];[].forEach.call($('cqSk').querySelectorAll('[data-sk]'),function(el){var i=el.dataset.sk,r=document.querySelector('input[name="cqr'+i+'"]:checked');out.push({t:el.value.trim(),rate:r?r.value:''})});return out}
+$('cqAddSk').onclick=function(){var sk=readSk();sk.push({t:'',rate:''});buildSk(sk)};
+$('cqSk').onclick=function(e){var rm=e.target.dataset.rm;if(rm===undefined)return;var sk=readSk();sk.splice(+rm,1);buildSk(sk)};
+function cqRead(inp,cb){var f=inp.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){cb(fr.result)};fr.onerror=function(){cqErr('Could not read that file.')};fr.readAsText(f)}
+function cqLoadQs(text){var data=parseCSV(text);if(data.length<2){cqErr('No question rows found. Check that the first row has headers.');return}
+  var h=data[0].map(cqNorm),ix=function(n){return h.findIndex(function(x){return n.indexOf(x)>-1})};
+  var iq=ix(['question','questions','q']),ia=ix(['a','optiona','choicea']),ib=ix(['b','optionb','choiceb']),ic=ix(['c','optionc','choicec']),idd=ix(['d','optiond','choiced']),ik=ix(['answer','correctanswer','correct','key']);
+  if(iq<0||ia<0||ib<0||ik<0){cqErr('Headers must include Question, A, B, C, D and Answer.');return}
+  var g=function(c,i){return i>-1?(c[i]||'').trim():''};
+  var qs=data.slice(1).map(function(c){return {q:g(c,iq),a:g(c,ia),b:g(c,ib),c:g(c,ic),d:g(c,idd),ans:g(c,ik).toUpperCase().replace(/[^ABCD]/g,'').charAt(0)}}).filter(function(x){return x.q});
+  if(!qs.length){cqErr('No questions found in the file.');return}
+  var extra=qs.length>10;qs=qs.slice(0,10);buildQs(qs);
+  cqOk(qs.length+' question(s) loaded into the form.'+(extra?' Only the first 10 were used.':'')+(qs.length<10?' Fill in the remaining '+(10-qs.length)+' manually.':'')+' Click Save questionnaire to keep them.')}
+function cqLoadSk(text){var data=parseCSV(text);if(!data.length){cqErr('No skills found.');return}
+  var h=data[0].map(cqNorm),hasH=['skill','skills','task','tasks','practicalskill','description'].indexOf(h[0])>-1,
+  body=hasH?data.slice(1):data,ri=hasH?h.findIndex(function(x){return x==='rating'||x==='level'}):1;
+  var sk=body.map(function(c){var r=ri>-1?(c[ri]||'').trim():'';return {t:(c[0]||'').trim(),rate:/^[123]$/.test(r)?r:''}}).filter(function(s){return s.t});
+  if(!sk.length){cqErr('No skills found in the file.');return}
+  buildSk(sk);cqOk(sk.length+' skill(s) loaded into the form. Click Save questionnaire to keep them.')}
+$('cqWFile').onchange=function(e){cqRead(e.target,function(t){$('cqWPaste').value=t;cqLoadQs(t)})};
+$('cqWLoad').onclick=function(){cqLoadQs($('cqWPaste').value)};
+$('cqWSample').onclick=function(){$('cqWPaste').value='Question,A,B,C,D,Answer\nWhat does GMP stand for?,Good Manufacturing Practice,General Maintenance Plan,Good Marketing Policy,Group Management Process,A\nHow long should hands be washed?,5 seconds,20 seconds,2 seconds,1 second,B'};
+$('cqSFile').onchange=function(e){cqRead(e.target,function(t){$('cqSPaste').value=t;cqLoadSk(t)})};
+$('cqSLoad').onclick=function(){cqLoadSk($('cqSPaste').value)};
+$('cqSSample').onclick=function(){$('cqSPaste').value='Skill,Rating\nDemonstrates proper handwashing,3\nWears PPE correctly,'};
+function cqWhere(r){var d=r.dept===OTHERS?(r.deptOther||'Others'):r.dept;return d+(r.area?' – '+r.area:'')}
+function cqKey(r){return [r.position,r.dept,r.dept===OTHERS?(r.deptOther||'').toLowerCase():'',r.area||''].join('|')}
+function renderCq(){$('cqBody').innerHTML=cqs.length?cqs.map(function(r){var rated=r.skills.filter(function(s){return s.rate}).length,d=new Date(r.saved);
+  return '<tr><td style="white-space:nowrap"><button class="lnk" data-cv="'+r.id+'">Preview</button><button class="lnk" data-ce="'+r.id+'">Edit</button><button class="del" data-cd="'+r.id+'">Delete</button></td><td><b>'+esc(r.code)+'</b></td><td>'+esc(r.position)+'</td><td>'+esc(cqWhere(r))+'</td><td>'+r.qs.length+' questions</td><td>'+r.skills.length+' skill(s), '+rated+' rated</td><td>'+(isNaN(d)?'':esc(d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})))+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">No questionnaires saved yet.</td></tr>'}
+function cqClear(){cqEditing=null;$('cqCode').value=nextCqCode();$('cqPos').value='';$('cqDept').value='';$('cqDeptOther').value='';cqToggle();buildQs([]);buildSk([]);$('cqSave').textContent='Save questionnaire';$('cqEditBar').hidden=true}
+$('cqReset').onclick=function(){cqClear();$('cqMsg').textContent=''};
+$('cqSave').onclick=function(){var pos=$('cqPos').value,dept=$('cqDept').value,dO=$('cqDeptOther').value.trim(),area=AREAS[dept]?$('cqArea').value:'';
+  if(!pos||!dept){cqErr('Position and department are required.');return}
+  if(dept===OTHERS&&!dO){cqErr('Please specify the department under “Others”.');return}
+  if(AREAS[dept]&&!area){cqErr('Select an area for '+dept+'.');return}
+  var code=$('cqCode').value.trim();if(!code){cqErr('Questionnaire code is required.');return}
+  if(cqs.some(function(x){return x.id!==cqEditing&&(x.code||'').toLowerCase()===code.toLowerCase()})){cqErr('That questionnaire code is already used.');return}
+  var qs=readQs(),bad=[];qs.forEach(function(x,i){if(!x.q||!x.a||!x.b||!x.ans||!x[x.ans.toLowerCase()])bad.push(i+1)});
+  if(bad.length){cqErr('Complete question(s) '+bad.join(', ')+': question text, at least options A and B, and a correct answer that matches a filled option.');return}
+  var sk=readSk().filter(function(s){return s.t});if(!sk.length){cqErr('Add at least one practical skill.');return}
+  var rec={id:cqEditing||uid(),code:code,position:pos,dept:dept,deptOther:dept===OTHERS?dO:'',area:area,qs:qs,skills:sk,saved:new Date().toISOString()};
+  var k=cqKey(rec),clash=cqs.filter(function(x){return x.id!==rec.id&&cqKey(x)===k})[0];
+  if(clash&&!confirm('A questionnaire for this position, department and area already exists. Replace it?'))return;
+  cqs=cqs.filter(function(x){return x.id!==rec.id&&cqKey(x)!==k});cqs.unshift(rec);cqSave2();renderCq();cqClear();cqOk('Questionnaire saved.')};
+$('cqBody').onclick=function(e){var t=e.target,d=t.dataset.cd,ed=t.dataset.ce;
+  if(t.dataset.cv){cqPreview(t.dataset.cv);return}
+  if(d&&confirm('Delete this questionnaire?')){cqs=cqs.filter(function(x){return x.id!==d});cqSave2();renderCq()}
+  if(ed){var r=cqs.filter(function(x){return x.id===ed})[0];if(!r)return;cqEditing=ed;$('cqCode').value=r.code||'';fillCqPos(r.position);$('cqPos').value=r.position;$('cqDept').value=r.dept;cqToggle();$('cqDeptOther').value=r.deptOther||'';if(AREAS[r.dept])$('cqArea').value=r.area||'';
+    buildQs(r.qs);buildSk(r.skills);$('cqSave').textContent='Update questionnaire';$('cqEditBar').hidden=false;$('cqEditBar').textContent='Editing the questionnaire for '+r.position+' ('+cqWhere(r)+'). Change the fields below, then click Update questionnaire.';$('cqMsg').textContent='';$('cq').scrollIntoView()}};
+function loadCq(){try{cqs=JSON.parse(localStorage.getItem('training_cq_v1')||'[]')}catch(e){cqs=[]}if(!Array.isArray(cqs))cqs=[];
+  var ch=false;cqs.forEach(function(r){if(!r.code){r.code=nextCqCode();ch=true}});if(ch)cqSave2();
+  $('cqDept').innerHTML=opts(DEPTS.concat([OTHERS]),'Select department…');fillCqPos();cqClear();renderCq()}
+var tests=[],asId=null;
+function pctOf(s,t){return Math.round(s/t*1000)/10}
+function nextCqCode(){var n=0;cqs.forEach(function(r){var m=/(\d+)\s*$/.exec(r.code||'');if(m)n=Math.max(n,+m[1])});return 'CQ-'+String(n+1).padStart(3,'0')}
+function tSave(){try{localStorage.setItem('training_tests_v1',JSON.stringify(tests))}catch(e){}}
+function loadTests(){try{tests=JSON.parse(localStorage.getItem('training_tests_v1')||'[]')}catch(e){tests=[]}if(!Array.isArray(tests))tests=[]}
+function tName(t){return t.surname+', '+t.first+(t.middle?' '+t.middle:'')}
+function fdt(s){var d=(s instanceof Date)?s:new Date(s);return isNaN(d)?'':d.toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit'})}
+function fdate(s){var d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}
+function pvRender(r,key){var h='<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div class="sub" style="margin:0">Questionnaire code</div><h2 style="margin:0">'+esc(r.code)+'</h2></div><button class="btn sec" id="pvClose" type="button">Close</button></div>'
+  +'<p style="margin:8px 0">Position: <b>'+esc(r.position)+'</b><br>Department / area: <b>'+esc(cqWhere(r))+'</b></p><label class="chk"><input type="checkbox" id="pvKey"'+(key?' checked':'')+'> Show answer key</label>'
+  +'<div class="sect">Part 2 · Written exam</div>'+r.qs.map(function(x,i){return '<div style="margin-bottom:12px"><b>'+(i+1)+'. '+esc(x.q)+'</b>'+['a','b','c','d'].filter(function(k){return x[k]}).map(function(k){var ok=key&&x.ans===k.toUpperCase();return '<div style="margin-left:14px'+(ok?';color:var(--ok);font-weight:600':'')+'">'+k.toUpperCase()+'. '+esc(x[k])+(ok?' ✓':'')+'</div>'}).join('')+'</div>'}).join('')
+  +'<div class="sect">Part 3 · Practical skills</div><p class="sub" style="margin-top:0">Mark the level: 1 – Not Passed · 2 – Needs Improvement · 3 – Satisfactory</p>'
+  +r.skills.map(function(s,i){return '<div style="margin-bottom:8px">'+(i+1)+'. '+esc(s.t)+'<div class="sub" style="margin:0;font-size:.82rem">☐ 1 – Not Passed   ☐ 2 – Needs Improvement   ☐ 3 – Satisfactory</div></div>'}).join('');
+  $('pvBox').innerHTML=h;$('pv').hidden=false;$('pvKey').onchange=function(){pvRender(r,this.checked)};$('pvClose').onclick=function(){$('pv').hidden=true}}
+function cqPreview(id){var r=cqs.filter(function(x){return x.id===id})[0];if(r)pvRender(r,true)}
+$('pv').onclick=function(e){if(e.target===$('pv'))$('pv').hidden=true};
+function ctEmpNo(){var s=$('ctSur').value.trim().toLowerCase(),f=$('ctFirst').value.trim().toLowerCase(),m=$('ctMid').value.trim().toLowerCase();if(!s||!f)return '';
+  var hit=rows.filter(function(r){return r.empId&&(r.surname||'').toLowerCase()===s&&(r.first||'').toLowerCase()===f})[0];if(hit)return hit.empId;
+  var th=tests.filter(function(t){return t.surname.toLowerCase()===s&&t.first.toLowerCase()===f&&(t.middle||'').toLowerCase()===m})[0];if(th)return th.empNo;
+  var n=0,rx=/(\d+)\s*$/;rows.forEach(function(r){var x=rx.exec(r.empId||'');if(x)n=Math.max(n,+x[1])});tests.forEach(function(t){var x=rx.exec(t.empNo||'');if(x)n=Math.max(n,+x[1])});
+  return 'EMP-'+String(n+1).padStart(4,'0')}
+['ctSur','ctFirst','ctMid'].forEach(function(i){$(i).oninput=function(){$('ctNo').value=ctEmpNo()}});
+function ctOpen(){var names=[];cqs.forEach(function(q){if(names.indexOf(q.position)<0)names.push(q.position)});var cur=$('ctPos').value;
+  $('ctPos').innerHTML='<option value="">'+(names.length?'Select position…':'No questionnaires yet – create one in Competency questionnaire')+'</option>'+names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('');
+  $('ctPos').value=cur;if($('ctPos').selectedIndex<0){$('ctPos').selectedIndex=0;ctPick()}ctList()}
+function ctCur(){var p=$('ctPos').value;if(!p)return null;var id=$('ctQ').value;return cqs.filter(function(q){return q.id===id&&q.position===p})[0]||cqs.filter(function(q){return q.position===p})[0]||null}
+function ctPick(){var p=$('ctPos').value,l=cqs.filter(function(q){return q.position===p});$('ctQBox').hidden=l.length<2;
+  $('ctQ').innerHTML=l.map(function(q){return '<option value="'+esc(q.id)+'">'+esc(q.code+' · '+cqWhere(q))+'</option>'}).join('');ctShowQs()}
+function ctShowQs(){var q=ctCur();$('ctResult').hidden=true;
+  if(!q){$('ctQs').innerHTML='';$('ctSubmit').hidden=true;$('ctInfo').textContent='';return}
+  $('ctInfo').textContent='Questionnaire '+q.code+' · '+cqWhere(q);
+  $('ctQs').innerHTML=q.qs.map(function(x,i){return '<div class="card" style="margin-bottom:10px;background:var(--bg)"><b>'+(i+1)+'. '+esc(x.q)+'</b>'+['a','b','c','d'].filter(function(k){return x[k]}).map(function(k){return '<label class="chk" style="margin-top:6px"><input type="radio" name="ctq'+i+'" value="'+k.toUpperCase()+'"> '+k.toUpperCase()+'. '+esc(x[k])+'</label>'}).join('')+'</div>'}).join('');
+  $('ctSubmit').hidden=false}
+$('ctPos').onchange=ctPick;$('ctQ').onchange=ctShowQs;
+function ctClear(){['ctSur','ctFirst','ctMid','ctNo'].forEach(function(i){$(i).value=''});$('ctPos').value='';ctPick()}
+$('ctReset').onclick=function(){ctClear();$('ctMsg').textContent=''};
+$('ctSubmit').onclick=function(){var q=ctCur(),m=$('ctMsg'),s=$('ctSur').value.trim(),f=$('ctFirst').value.trim(),mi=$('ctMid').value.trim();
+  var er=function(t){m.className='msg err';m.textContent=t};
+  if(!q){er('Select a position first.');return}
+  if(!s||!f){er('Surname and first name are required.');return}
+  var ans=[],miss=[];q.qs.forEach(function(x,i){var c=document.querySelector('input[name="ctq'+i+'"]:checked');ans.push(c?c.value:'');if(!c)miss.push(i+1)});
+  if(miss.length){er('Please answer question(s) '+miss.join(', ')+'.');return}
+  var score=0;q.qs.forEach(function(x,i){if(ans[i]===x.ans)score++});
+  var t={id:uid(),empNo:ctEmpNo(),surname:s,first:f,middle:mi,qid:q.id,code:q.code,position:q.position,dept:q.dept,deptOther:q.deptOther||'',area:q.area||'',answers:ans,score:score,total:q.qs.length,date:new Date().toISOString(),skills:q.skills.map(function(k){return {t:k.t,rate:''}}),asmt:null};
+  tests.unshift(t);tSave();ctList();ctClear();
+  $('ctResult').hidden=false;$('ctResult').innerHTML='<div class="sub" style="margin:0">Written exam result</div><h3 style="margin:2px 0">'+esc(tName(t))+' ('+esc(t.empNo)+')</h3><div style="font-size:1.7rem;font-weight:700">'+score+' / '+t.total+' ('+pctOf(score,t.total)+'%)</div><p class="sub" style="margin:6px 0 0">The practical skill test is rated by the assessor in the list below.</p>';
+  m.className='msg ok';m.textContent='Answers submitted.'};
+function ctList(){$('ctBody').innerHTML=tests.length?tests.map(function(t){var sm='<div class="sub" style="margin:0;font-size:.76rem">';
+  return '<tr><td style="white-space:nowrap"><button class="lnk" data-as="'+t.id+'">'+(t.asmt?'Edit assessment':'Assess')+'</button><button class="del" data-td="'+t.id+'">Delete</button></td><td>'+esc(fdt(t.date))+'</td><td>'+esc(t.empNo)+'</td><td>'+esc(tName(t))+'</td><td>'+esc(t.position)+sm+esc(t.code)+'</div></td><td>'+t.score+'/'+t.total+' ('+pctOf(t.score,t.total)+'%)</td><td>'+(t.asmt?'<span class="ok">Assessed</span>'+sm+esc(t.asmt.name)+' · '+esc(t.asmt.role)+'</div>'+sm+'Assessed on: '+esc(fdt(t.asmt.date))+'</div>':'<span class="sub">Pending</span>')+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">No tests submitted yet.</td></tr>'}
+$('ctBody').onclick=function(e){var t=e.target,a=t.dataset.as,d=t.dataset.td;
+  if(d&&confirm('Delete this test?')){tests=tests.filter(function(x){return x.id!==d});tSave();ctList();if(asId===d)$('asBox').hidden=true}
+  if(a){var x=tests.filter(function(z){return z.id===a})[0];if(!x)return;asId=a;
+    $('asTitle').textContent='Assessor evaluation – '+tName(x)+' ('+x.empNo+')';
+    $('asScore').textContent=x.position+' · '+x.code+' · Written score: '+x.score+'/'+x.total+' ('+pctOf(x.score,x.total)+'%)';
+    $('asWC').value=x.asmt?x.asmt.wc:'';$('asPC').value=x.asmt?x.asmt.pc:'';$('asName').value=x.asmt?x.asmt.name:'';$('asRole').value=x.asmt?x.asmt.role:'';
+    $('asSk').innerHTML=x.skills.map(function(s,i){return '<div class="card" style="margin-bottom:8px"><div>'+(i+1)+'. '+esc(s.t)+'</div><div style="margin-top:6px;display:flex;gap:14px;flex-wrap:wrap">'+[['1','Not Passed'],['2','Needs Improvement'],['3','Satisfactory']].map(function(l){return '<label class="chk"><input type="radio" name="asr'+i+'" value="'+l[0]+'"'+(s.rate===l[0]?' checked':'')+'> '+l[0]+' – '+l[1]+'</label>'}).join('')+'</div></div>'}).join('');
+    $('asMsg').textContent='';$('asBox').hidden=false;$('asBox').scrollIntoView()}};
+$('asCancel').onclick=function(){$('asBox').hidden=true;asId=null};
+$('asSave').onclick=function(){var m=$('asMsg'),x=tests.filter(function(z){return z.id===asId})[0],er=function(t){m.className='msg err';m.textContent=t};if(!x)return;
+  var nm2=$('asName').value.trim(),role=$('asRole').value;if(!nm2||!role){er('Assessor name and role are required.');return}
+  var sk=x.skills.map(function(s,i){var c=document.querySelector('input[name="asr'+i+'"]:checked');return {t:s.t,rate:c?c.value:''}});
+  if(sk.some(function(s){return !s.rate})){er('Rate every skill: 1, 2 or 3.');return}
+  x.skills=sk;x.asmt={wc:$('asWC').value.trim(),pc:$('asPC').value.trim(),name:nm2,role:role,date:new Date().toISOString()};
+  tSave();ctList();$('asBox').hidden=true;asId=null;$('ctMsg').className='msg ok';$('ctMsg').textContent='Evaluation saved.'};
+function caRender(){$('caAsOf').textContent=fdt(new Date());var pass=parseFloat($('caPass').value)||70,q=$('caQ').value.toLowerCase().trim(),sh=$('caShow').value,tna=tnaData();
+  var items=tests.map(function(t){var pct=pctOf(t.score,t.total),needs=[];
+    if(pct<pass)needs.push('Refresher on '+t.code+' topics and written exam retake ('+pct+'% is below '+pass+'%)');
+    t.skills.forEach(function(s){if(s.rate==='1')needs.push('Retraining: '+s.t+' (Not Passed)');else if(s.rate==='2')needs.push('Coaching / refresher: '+s.t+' (Needs Improvement)')});
+    var p=tna.filter(function(d){return d.r.empId&&d.r.empId.toLowerCase()===t.empNo.toLowerCase()})[0];
+    if(p)p.needs.forEach(function(n){needs.push('Required for position: '+n.t+(n.retake?' (retake, failed)':' (not yet taken)'))});
+    return {t:t,pct:pct,needs:needs}});
+  var nd=items.filter(function(i){return i.needs.length}).length,pe=items.filter(function(i){return!i.t.asmt}).length,ok=items.filter(function(i){return!i.needs.length&&i.t.asmt}).length;
+  $('caStats').innerHTML=[[items.length,'Tests'],[nd,'Additional training needed'],[ok,'No additional training'],[pe,'Pending assessment']].map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'}).join('');
+  var list=items.filter(function(i){var t=i.t;if(sh==='need'&&!i.needs.length)return false;if(sh==='ok'&&(i.needs.length||!t.asmt))return false;if(sh==='pend'&&t.asmt)return false;
+    return !q||[tName(t),t.empNo,t.position,t.code].join(' ').toLowerCase().indexOf(q)>-1});
+  $('caBody').innerHTML=list.length?list.map(function(i){var t=i.t,a=t.asmt,sm='<div class="sub" style="margin:0;font-size:.76rem">',c={'1':0,'2':0,'3':0};t.skills.forEach(function(s){if(c[s.rate]!==undefined)c[s.rate]++});
+    var st=i.needs.length?'<span class="pill Failed">Training needed</span>':a?'<span class="pill Passed">No additional training</span>':'<span class="pill" style="color:var(--muted)">Pending assessment</span>';
+    return '<tr><td>'+esc(tName(t))+sm+esc(t.empNo)+'</div><div style="margin-top:4px">'+st+'</div></td><td>'+esc(t.position)+sm+esc(t.code)+'</div></td><td>'+t.score+'/'+t.total+' ('+i.pct+'%)'+sm+'Test taken: '+esc(fdt(t.date))+'</div>'+sm+(i.pct>=pass?'Above pass mark':'Below pass mark')+'</div></td><td>'+(a?'Level 3: '+c['3']+' · Level 2: '+c['2']+' · Level 1: '+c['1']:'<span class="sub">Pending assessment</span>')+'</td><td>'+(i.needs.length?i.needs.map(function(n){return '<div>• '+esc(n)+'</div>'}).join(''):'<span class="ok">None</span>')+'</td><td>'+(a?'<b>Written:</b> '+esc(a.wc||'—')+'<br><b>Practical:</b> '+esc(a.pc||'—')+sm+esc(a.name)+' · '+esc(a.role)+'</div>'+sm+'Assessed on: '+esc(fdt(a.date))+'</div>':'<span class="sub">—</span>')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">No tests to analyze yet.</td></tr>'}
+$('caQ').oninput=caRender;$('caShow').onchange=caRender;$('caPass').oninput=caRender;
+$('posDept').onchange=togglePosDept;
+$('posReset').onclick=function(){clearPos();$('posMsg').textContent=''};
+$('posBody').onclick=function(e){var t=e.target,pd=t.dataset.pd,pe=t.dataset.pe;
+  if(pd&&confirm('Delete this position? Existing records keep their position text.')){positions=positions.filter(function(p){return p.id!==pd});persistPos();renderPos();fillPosSelect()}
+  if(pe){var p=positions.filter(function(x){return x.id===pe})[0];if(!p)return;posEditing=pe;$('posName').value=p.name;$('posDept').value=p.dept||'';togglePosDept();$('posDeptOther').value=p.deptOther||'';if(AREAS[p.dept])$('posArea').value=p.area||'';
+    [].forEach.call($('posTypes').querySelectorAll('input'),function(i){i.checked=p.types.indexOf(i.value)>-1});$('posSave').textContent='Update position';$('posMsg').textContent='';$('posName').focus()}};
+
+/* ===== Appointment Letter ===== */
+var TMKEY='training_teams_v1',TMSET='training_teams_settings_v1',teams=[],tmSet={co:'',date:'',eff:'',pre:'APT',by:'',byPos:''},tmCur=null;
+var TM_DEFAULT=[
+['Plant’s Quality and Food Safety Team','Oversee the plant’s quality and food safety performance.\nReview quality and food safety objectives, results and trends.\nEnsure compliance with customer, regulatory and certification requirements.\nRecommend resources and corrective actions to management.'],
+['Incident Analysis Team','Investigate food safety, quality, safety and security incidents.\nDetermine root causes using appropriate tools.\nRecommend and follow up corrective and preventive actions.\nReport findings and lessons learned to management.'],
+['Product Traceability Team','Maintain the product traceability and recall system.\nConduct scheduled mock traceability and recall exercises.\nVerify lot coding and records from raw material to dispatch.\nReport results and gaps for corrective action.'],
+['Internal Quality Audit Team','Plan and conduct internal audits of the management system.\nReport audit findings and verify corrective actions.\nMaintain impartiality and confidentiality of audit results.\nSubmit audit summaries to management review.'],
+['First Aid Team','Provide immediate first aid to injured or ill personnel.\nMaintain first aid kits, supplies and records.\nCoordinate with the plant clinic and emergency responders.\nAttend required first aid training and refreshers.'],
+['Documented Information','Maintain the control of documents and records.\nEnsure documents are current, approved and available at points of use.\nManage retention, retrieval and disposal of records.'],
+['Vulnerability Analysis Critical Control Point','Conduct the food fraud vulnerability assessment (VACCP).\nIdentify and evaluate fraud-prone raw materials and suppliers.\nImplement and verify mitigation and control measures.\nReview the assessment at least annually or when changes occur.'],
+['Food Safety Management Team / HACCP Team','Develop, implement and maintain the HACCP plan and prerequisite programs.\nConduct hazard analysis and determine critical control points.\nVerify and validate the effectiveness of food safety controls.\nReview the food safety system after changes or incidents.'],
+['Plant’s Crisis Management Team','Lead the plant’s response to crisis and emergency situations.\nActivate the crisis and business continuity plans when required.\nCoordinate communication with authorities, customers and employees.\nConduct drills and review the effectiveness of the plan.'],
+['Safety and Utilities Support Team','Ensure safe and reliable operation of plant utilities.\nSupport safety inspections and preventive maintenance.\nRespond to utility failures that may affect product safety.\nMaintain utility-related safety and monitoring records.'],
+['Security Team','Implement the plant’s security and access control procedures.\nMonitor premises, visitors, vehicles and deliveries.\nReport and respond to security incidents.\nSupport food defense and emergency programs.'],
+['Environmental Monitoring Program','Implement the environmental monitoring program for the plant.\nCollect samples and record results according to the schedule.\nAnalyze trends and report out-of-limit results.\nInitiate corrective actions and verify their effectiveness.'],
+['Occupational Safety and Health Team','Implement the occupational safety and health program.\nConduct workplace inspections and hazard identification.\nInvestigate accidents and recommend preventive actions.\nPromote safety awareness and compliance among employees.'],
+['Fire Brigade Team','Respond to fire emergencies according to the fire emergency plan.\nInspect and maintain firefighting equipment.\nConduct fire drills and evacuation exercises.\nAttend required fire safety training.'],
+['Threat Assessment and Critical Points / Food Defense','Conduct the food defense threat assessment (TACCP).\nIdentify critical points and implement protective measures.\nMonitor and verify the effectiveness of food defense controls.\nReview the plan at least annually or when changes occur.'],
+['Pest Control Management','Implement the integrated pest management program.\nCoordinate with the pest control provider and review service reports.\nMonitor pest activity and trends.\nEnsure corrective actions are completed on time.'],
+['Animal Health and Welfare Team','Implement the animal health and welfare program.\nMonitor compliance with welfare requirements during receiving and handling.\nRecord and report non-conformities.\nCoordinate with suppliers and relevant authorities.'],
+['Resource Speaker on assigned in – house trainings/ seminars','Prepare training materials for the assigned topics.\nConduct in-house trainings and seminars as scheduled.\nEvaluate participants and submit training records.\nKeep training content updated and accurate.'],
+['Quality Assurance','Ensure compliance with quality and food safety standards and specifications.\nMonitor, verify and release product according to requirements.\nHandle non-conformances, complaints and corrective actions.\nSupport audits and customer requirements.'],
+['Document Controller','Control the issuance, revision and distribution of documents.\nMaintain the master list of documents and records.\nRetrieve obsolete documents and prevent their unintended use.\nEnsure records are retained and protected.'],
+['Pollution Control Officer','Ensure compliance with environmental laws, permits and standards.\nMonitor wastewater, air emissions and solid waste management.\nPrepare and submit required environmental reports.\nCoordinate with regulatory agencies and recommend improvements.']
+];
+function tmDefaults(){return TM_DEFAULT.map(function(a){return {id:uid(),name:a[0],resp:a[1],types:[],members:[],memoDate:'',effDate:'',revs:[]}})}
+function tmSave(){try{localStorage.setItem(TMKEY,JSON.stringify(teams))}catch(e){}}
+function tmSaveSettings(){try{localStorage.setItem(TMSET,JSON.stringify(tmSet))}catch(e){}}
+function tmFixName(x){return x==='Food safety Culture'?'Food Safety Culture':x}
+function tmFixSaved(){var ch=false;
+  rows.forEach(function(r){if(r.trainType==='Food safety Culture'){r.trainType='Food Safety Culture';ch=true}});
+  if(ch)persist();ch=false;
+  positions.forEach(function(p){if(Array.isArray(p.types)&&p.types.indexOf('Food safety Culture')>-1){p.types=p.types.map(tmFixName);ch=true}});
+  if(ch)persistPos()}
+function tmLoad(){var v=null;try{v=JSON.parse(localStorage.getItem(TMKEY)||'null')}catch(e){}
+  if(Array.isArray(v)&&v.length)teams=v;else{teams=tmDefaults();tmSave()}
+  teams.forEach(function(t){if(!Array.isArray(t.types))t.types=[];t.types=t.types.map(tmFixName);if(!Array.isArray(t.members))t.members=[];if(!Array.isArray(t.revs))t.revs=[];if(t.memoDate==null)t.memoDate='';if(t.effDate==null)t.effDate=''})
+  try{var st=JSON.parse(localStorage.getItem(TMSET)||'null');if(st&&typeof st==='object')Object.keys(tmSet).forEach(function(k){if(st[k]!=null)tmSet[k]=st[k]})}catch(e){}
+  $('tmCo').value=tmSet.co;$('tmDate').value=tmSet.date;$('tmEff').value=tmSet.eff;$('tmPre').value=tmSet.pre;$('tmBy').value=tmSet.by;$('tmByPos').value=tmSet.byPos;
+  $('mbDept').innerHTML=opts(DEPTS,'(none)');tmRender()}
+function tmMemoNo(i){return (tmSet.pre?tmSet.pre+'-':'')+('00'+(i+1)).slice(-3)}
+function tmGet(id){return teams.filter(function(t){return t.id===id})[0]}
+
+/* matching members to training records */
+function tmTok(x){return String(x||'').toLowerCase().replace(/[^a-z0-9\u00c0-\u024f\s]/g,' ').split(/\s+/).filter(function(w){return w.length>1})}
+function tmRecs(m){var mt=tmTok(m.name),id=String(m.empId||'').toLowerCase().trim();
+  return rows.filter(function(r){
+    if(id&&r.empId&&String(r.empId).toLowerCase().trim()===id)return true;
+    var rt=tmTok((r.surname||'')+' '+(r.first||''));if(!rt.length)return false;
+    return rt.every(function(w){return mt.indexOf(w)>-1})}).sort(function(a,b){return (a.date||'')<(b.date||'')?-1:(a.date||'')>(b.date||'')?1:0})}
+function tmEmpId(m){if(m.empId)return m.empId;var r=tmRecs(m).filter(function(x){return x.empId})[0];return r?String(r.empId):''}
+function tmStatus(t,m){var recs=tmRecs(m),req=t.types||[];
+  var items=req.map(function(ty){var rs=recs.filter(function(r){return tt(r)===ty});
+    var ok=rs.filter(function(r){return r.status==='Passed'}).sort(function(a,b){return (b.date||'')<(a.date||'')?-1:1})[0];
+    return {t:ty,state:ok?'done':(rs.length?'failed':'missing'),rec:ok||rs[rs.length-1]}});
+  return {recs:recs,items:items,bad:items.filter(function(i){return i.state!=='done'})}}
+function tmStateTxt(i){return i.state==='done'?'Completed':i.state==='failed'?'Failed – retake required':'Not yet attended'}
+
+function tmDates(t){return {memo:t.memoDate||tmSet.date||'',eff:t.effDate||tmSet.eff||''}}
+function tmRevs(t){if(t.revs&&t.revs.length)return t.revs;var d=tmDates(t);return [{id:'0',rev:'00',date:d.memo,desc:'Initial issuance',by:tmSet.by||''}]}
+function tmRevNo(t){var r=tmRevs(t);return r[r.length-1].rev}
+function tmRender(){var q=($('tmQ').value||'').toLowerCase().trim();
+  var html=teams.map(function(t,i){
+    if(q&&[t.name,t.members.map(function(m){return m.name+' '+m.position}).join(' ')].join(' ').toLowerCase().indexOf(q)<0)return '';
+    var ld=t.members.filter(function(m){return m.role==='Team Leader'})[0],dt=tmDates(t);
+    var fl=t.members.filter(function(m){return tmStatus(t,m).bad.length}).length;
+    var sm='<div class="sub" style="margin:0;font-size:.76rem">';
+    var mc=t.members.length?t.members.length+(ld?sm+'Leader: '+esc(ld.name)+'</div>':'')+(fl?'<div class="err" style="font-size:.78rem"><b>\u26a0 '+fl+' member'+(fl>1?'s':'')+' with missing training</b></div>':''):'<span class="sub">No members yet</span>';
+    return '<tr><td style="white-space:nowrap"><button class="lnk" data-tm="'+t.id+'">Manage</button><button class="lnk" data-tr="'+t.id+'">Rename</button><button class="del" data-td="'+t.id+'">Delete</button></td><td>'+(i+1)+'</td><td><b>'+esc(t.name)+'</b>'+(t.types.length?sm+t.types.length+' required training'+(t.types.length>1?'s':'')+'</div>':'')+'</td><td>'+mc+'</td><td>Memo: '+(dt.memo?esc(fmtDate(dt.memo)):'<span class="err">not set</span>')+sm+'Effectivity: '+(dt.eff?esc(fmtDate(dt.eff)):'<span class="err">not set</span>')+'</div></td><td>'+esc(tmRevNo(t))+'</td><td style="white-space:nowrap"><button class="lnk" data-tp="'+t.id+'">Preview</button><button class="lnk" data-tw="'+t.id+'">Download .doc</button></td></tr>'}).join('');
+  $('tmBody').innerHTML=html||'<tr><td colspan="7" class="empty">No teams match.</td></tr>'}
+function tmTypesRender(t){$('tmTypes').innerHTML=TTYPES.map(function(ty,i){return '<label class="chk"><input type="checkbox" data-ty="'+i+'"'+(t.types.indexOf(ty)>-1?' checked':'')+'> '+esc(ty)+'</label>'}).join('')}
+$('tmTypes').onchange=function(){var t=tmGet(tmCur);if(!t)return;
+  t.types=[].slice.call($('tmTypes').querySelectorAll('input')).filter(function(i){return i.checked}).map(function(i){return TTYPES[+i.dataset.ty]});
+  tmSave();mbRender();tmRender()};
+function rvDefaults(t){var r=t.revs,n=r.length?String(parseInt(r[r.length-1].rev,10)+1):'00';if(n==='NaN')n=String(r.length);$('rvNo').value=('0'+n).slice(-2);$('rvDate').value=tmToday();$('rvBy').value=tmSet.by||'';$('rvDesc').value=r.length?'':'Initial issuance'}
+function rvRender(){var t=tmGet(tmCur);if(!t)return;
+  $('rvBody').innerHTML=t.revs.length?t.revs.map(function(r){return '<tr><td><button class="del" data-rd="'+r.id+'">Delete</button></td><td><b>'+esc(r.rev)+'</b></td><td>'+(r.date?esc(fmtDate(r.date)):'')+'</td><td style="white-space:pre-wrap">'+esc(r.desc)+'</td><td>'+esc(r.by)+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">No revisions recorded. The letter shows Rev. 00 (initial issuance) until you add one.</td></tr>'}
+$('rvAdd').onclick=function(){var t=tmGet(tmCur),m=$('rvMsg');if(!t)return;var no=$('rvNo').value.trim(),d=$('rvDesc').value.trim();
+  if(!no||!d){m.className='msg err';m.textContent='Rev. no. and description are required.';return}
+  if(t.revs.some(function(r){return r.rev===no})){m.className='msg err';m.textContent='That revision number already exists.';return}
+  t.revs.push({id:uid(),rev:no,date:$('rvDate').value,desc:d,by:$('rvBy').value.trim()});tmSave();rvRender();rvDefaults(t);tmRender();m.className='msg ok';m.textContent='Revision added. It now appears in the appointment letter.'};
+$('rvBody').onclick=function(e){var d=e.target.dataset.rd,t=tmGet(tmCur);if(d&&t&&confirm('Delete this revision entry?')){t.revs=t.revs.filter(function(r){return r.id!==d});tmSave();rvRender();rvDefaults(t);tmRender()}};
+var mbEditing=null;
+function tmOpen(id){var t=tmGet(id);if(!t)return;tmCur=id;mbEditing=null;$('tmEd').hidden=false;$('tmEdName').textContent=t.name;$('tmName').value=t.name;$('tmResp').value=t.resp||'';$('tmMemoDate').value=t.memoDate||'';$('tmEffDate').value=t.effDate||'';$('tmMsg').textContent='';$('mbMsg').textContent='';$('rvMsg').textContent='';mbFormReset();tmTypesRender(t);mbRender();rvRender();rvDefaults(t);$('tmEd').scrollIntoView({behavior:'smooth',block:'start'})}
+function mbRender(){var t=tmGet(tmCur);if(!t)return;var sm='<div class="sub" style="margin:0;font-size:.76rem">',req=t.types||[];
+  $('mbBody').innerHTML=t.members.length?t.members.map(function(m){var s=tmStatus(t,m),bad=s.bad.length;
+    var st=!req.length?'<span class="sub">No required trainings ticked</span>':!bad?'<span class="ok"><b>\u2713 All '+req.length+' completed</b></span>':'<span class="err"><b>\u26a0 '+bad+' of '+req.length+' not completed</b></span>'+s.bad.map(function(i){return '<div style="font-size:.8rem">\u2022 '+esc(i.t)+' <span class="'+(i.state==='failed'?'err':'sub')+'">— '+(i.state==='failed'?'failed, retake':'not yet attended')+'</span></div>'}).join('')+(!s.recs.length?sm+'No training records found for this name/ID</div>':'');
+    return '<tr'+(bad?' style="background:rgba(192,57,43,.10)"':'')+'><td style="white-space:nowrap"><button class="lnk" data-me="'+m.id+'">Edit</button><button class="del" data-md="'+m.id+'">Remove</button></td><td>'+(bad?'<b class="err">\u26a0 '+esc(m.name)+'</b>':esc(m.name))+(tmEmpId(m)?sm+'Code: '+esc(tmEmpId(m))+'</div>':'')+'</td><td>'+esc(m.position)+'</td><td>'+esc(m.dept)+'</td><td>'+esc(m.role)+'</td><td style="white-space:pre-wrap">'+(m.resp?esc(m.resp):'<span class="sub">—</span>')+'</td><td>'+st+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">No members yet. Add the people to be appointed.</td></tr>'}
+$('tmSaveSet').onclick=function(){tmSet={co:$('tmCo').value.trim(),date:$('tmDate').value,eff:$('tmEff').value,pre:$('tmPre').value.trim(),by:$('tmBy').value.trim(),byPos:$('tmByPos').value.trim()};tmSaveSettings();tmRender();$('tmSetMsg').className='msg ok';$('tmSetMsg').textContent='Details saved.'};
+$('tmQ').oninput=tmRender;
+$('tmAddOpen').onclick=function(){var n=prompt('Name of the new team / role:');if(!n||!n.trim())return;var t={id:uid(),name:n.trim(),resp:'',types:[],members:[],memoDate:'',effDate:'',revs:[]};teams.push(t);tmSave();tmRender();tmOpen(t.id)};
+$('tmCloseEd').onclick=function(){$('tmEd').hidden=true;tmCur=null};
+$('tmSaveTeam').onclick=function(){var t=tmGet(tmCur),m=$('tmMsg');if(!t)return;var n=$('tmName').value.trim();if(!n){m.className='msg err';m.textContent='Team name is required.';return}
+  t.name=n;t.resp=$('tmResp').value;t.memoDate=$('tmMemoDate').value;t.effDate=$('tmEffDate').value;tmSave();tmRender();$('tmEdName').textContent=n;m.className='msg ok';m.textContent='Team saved.'};
+function mbLookup(){var su=$('mbSur').value.trim(),fi=$('mbFirst').value.trim(),h=$('mbIdHint');
+  if(!su||!fi){$('mbId').value='';h.className='sub';h.textContent='Type the surname and first name to look it up.';return ''}
+  var recs=tmRecs({name:su+' '+fi,empId:''}),r=recs.filter(function(x){return x.empId})[0];
+  if(r){$('mbId').value=r.empId;h.className='sub ok';h.textContent='Found in '+recs.length+' training record'+(recs.length>1?'s':'')+'.';return String(r.empId)}
+  $('mbId').value='';h.className='sub';h.textContent=recs.length?'Training records found, but none has an employee code.':'No matching training record yet. The code appears automatically once the person has a record.';return ''}
+['mbSur','mbFirst'].forEach(function(i){$(i).oninput=mbLookup});
+function mbFormReset(){mbEditing=null;['mbSur','mbFirst','mbMid','mbPos','mbId','mbResp'].forEach(function(i){$(i).value=''});$('mbDept').value='';$('mbRole').value='Member';$('mbAdd').textContent='Add member';$('mbCancel').hidden=true;mbLookup()}
+$('mbCancel').onclick=function(){mbFormReset();$('mbMsg').textContent=''};
+$('mbAdd').onclick=function(){var t=tmGet(tmCur),m=$('mbMsg');if(!t)return;var su=$('mbSur').value.trim(),fi=$('mbFirst').value.trim(),mi=$('mbMid').value.trim();
+  if(!su||!fi){m.className='msg err';m.textContent='Surname and First name are required.';return}
+  var n=su+', '+fi+(mi?' '+mi:''),role=$('mbRole').value.trim()||'Member';
+  if(t.members.some(function(x){return x.name.toLowerCase()===n.toLowerCase()&&x.id!==mbEditing})){m.className='msg err';m.textContent='That person is already in this team.';return}
+  var o={surname:su,first:fi,mi:mi,name:n,position:$('mbPos').value.trim(),dept:$('mbDept').value,role:role,resp:$('mbResp').value.trim()};
+  if(mbEditing){t.members=t.members.map(function(x){return x.id===mbEditing?Object.assign({},x,o):x});m.textContent='Member updated.'}else{o.id=uid();o.empId='';t.members.push(o);m.textContent='Member added.'}
+  tmSave();mbRender();tmRender();mbFormReset();m.className='msg ok';$('mbSur').focus()};
+$('mbPick').onclick=function(){var seen={},list=[];rows.forEach(function(r){var k=(r.empId||nm(r)).toLowerCase();if(!seen[k]){seen[k]=1;list.push(r)}});
+  var m=$('mbMsg');if(!list.length){m.className='msg err';m.textContent='No training records yet to pick from.';return}
+  var n=prompt('Type part of the employee’s name or ID to search the training records:');if(!n)return;n=n.toLowerCase();
+  var hit=list.filter(function(r){return (nm(r)+' '+r.empId).toLowerCase().indexOf(n)>-1})[0];
+  if(!hit){m.className='msg err';m.textContent='No employee found for “'+n+'”.';return}
+  $('mbSur').value=hit.surname||'';$('mbFirst').value=hit.first||'';$('mbMid').value=hit.mi||'';mbLookup();$('mbPos').value=hit.position||'';$('mbDept').value=DEPTS.indexOf(hit.dept)>-1?hit.dept:'';m.className='msg ok';m.textContent='Filled from training records. Check the details, then click Add member.'};
+$('mbBody').onclick=function(e){var d=e.target.dataset,t=tmGet(tmCur);if(!t)return;
+  if(d.md&&confirm('Remove this member?')){t.members=t.members.filter(function(x){return x.id!==d.md});tmSave();if(mbEditing===d.md)mbFormReset();mbRender();tmRender()}
+  if(d.me){var x=t.members.filter(function(y){return y.id===d.me})[0];if(!x)return;mbEditing=x.id;
+    var sp=x.surname,fi=x.first,mi=x.mi;if(!sp){var nn=String(x.name||'').split(',');sp=nn[0].trim();fi=(nn[1]||'').trim()}
+    $('mbSur').value=sp||'';$('mbFirst').value=fi||'';$('mbMid').value=mi||'';$('mbPos').value=x.position||'';$('mbDept').value=x.dept||'';$('mbRole').value=x.role||'Member';$('mbResp').value=x.resp||'';mbLookup();
+    $('mbAdd').textContent='Update member';$('mbCancel').hidden=false;$('mbMsg').textContent='';$('mbSur').focus()}};
+$('tmBody').onclick=function(e){var d=e.target.dataset;
+  if(d.tm)tmOpen(d.tm);
+  if(d.tr){var t=tmGet(d.tr);if(t){var n=prompt('Edit the team / role name:',t.name);if(n&&n.trim()){t.name=n.trim();tmSave();tmRender();if(tmCur===t.id){$('tmName').value=t.name;$('tmEdName').textContent=t.name}}}}
+  if(d.td&&confirm('Delete this team and its members?')){teams=teams.filter(function(t){return t.id!==d.td});tmSave();if(tmCur===d.td){$('tmEd').hidden=true;tmCur=null}tmRender()}
+  if(d.tp)tmPreview(d.tp);
+  if(d.tw)tmDownload([d.tw])};
+
+/* documents */
+function tmDateTxt(x){return x?fmtDate(x):'_______________'}
+var TM_S='style="border:1px solid #444;padding:5px 8px;font-size:10.5pt;vertical-align:top"',TM_H='style="border:1px solid #444;padding:5px 8px;font-size:10.5pt;background:#e8e8e8;text-align:left"',TM_RED='color:#c0392b;',TM_BG='background:#fde8e6;';
+function tmSorted(t){var order={'Team Leader':0,'Assistant Team Leader':1,'Secretary':2,'Member':3,'Alternate':4};return t.members.slice().sort(function(a,b){return (order[a.role]!=null?order[a.role]:3)-(order[b.role]!=null?order[b.role]:3)})}
+function tmMemo(t,idx){
+  var DT=tmDates(t),co=tmSet.co||'[Company / Plant name]',S=TM_S,H=TM_H;
+  var resp=(t.resp||'').split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean),mem=tmSorted(t),anyR=mem.some(function(m){return m.resp});
+  var h='<div style="font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#000">';
+  h+='<p style="text-align:center;margin:0"><b style="font-size:14pt">'+esc(co)+'</b></p>';
+  h+='<p style="text-align:center;margin:2px 0 14px"><b style="font-size:13pt;letter-spacing:1px">APPOINTMENT MEMORANDUM</b></p>';
+  h+='<table style="border-collapse:collapse;width:100%;margin-bottom:10px"><tr><td style="width:18%;padding:2px 0"><b>Memo no.:</b></td><td>'+esc(tmMemoNo(idx))+'</td><td style="width:18%"><b>Date:</b></td><td>'+esc(tmDateTxt(DT.memo))+'</td></tr>';
+  h+='<tr><td style="padding:2px 0"><b>Revision:</b></td><td>Rev. '+esc(tmRevNo(t))+'</td><td><b>Effectivity:</b></td><td>'+esc(tmDateTxt(DT.eff))+'</td></tr><tr><td style="padding:2px 0"><b>To:</b></td><td colspan="3">The appointed members listed below</td></tr>';
+  h+='<tr><td style="padding:2px 0"><b>From:</b></td><td colspan="3">'+esc(tmSet.by||'_______________________')+(tmSet.byPos?', '+esc(tmSet.byPos):'')+'</td></tr>';
+  h+='<tr><td style="padding:2px 0"><b>Subject:</b></td><td colspan="3"><b>Appointment of '+esc(t.name)+'</b></td></tr></table>';
+  h+='<hr style="border:0;border-top:1.5px solid #000">';
+  h+='<p style="text-align:justify;line-height:1.4">In line with the plant’s commitment to quality, food safety, safety and compliance, the following personnel are hereby officially appointed to the <b>'+esc(t.name)+'</b>, effective '+esc(tmDateTxt(DT.eff))+' until revoked or amended in writing.</p>';
+  h+='<table style="border-collapse:collapse;width:100%;margin:8px 0"><tr><th '+H+'>No.</th><th '+H+'>Name</th><th '+H+'>Position / Department</th><th '+H+'>Role in the team</th>'+(anyR?'<th '+H+'>Individual responsibility</th>':'')+'</tr>';
+  if(mem.length)mem.forEach(function(m,i){h+='<tr><td '+S+'>'+(i+1)+'</td><td '+S+'>'+esc(m.name)+'</td><td '+S+'>'+esc(m.position)+(m.position&&m.dept?' / ':'')+esc(m.dept)+'</td><td '+S+'>'+esc(m.role)+'</td>'+(anyR?'<td '+S+'>'+esc(m.resp||'')+'</td>':'')+'</tr>'});
+  else for(var k=1;k<=4;k++)h+='<tr><td '+S+'>'+k+'</td><td '+S+'>&nbsp;</td><td '+S+'>&nbsp;</td><td '+S+'>&nbsp;</td>'+(anyR?'<td '+S+'>&nbsp;</td>':'')+'</tr>';
+  h+='</table>';
+  if(resp.length)h+='<p style="margin:10px 0 4px"><b>Purpose and responsibilities of the team</b></p><ol style="margin:0 0 8px 18px;line-height:1.4">'+resp.map(function(r){return '<li>'+esc(r)+'</li>'}).join('')+'</ol>';
+  if((t.types||[]).length)h+='<p style="margin:10px 0 4px"><b>Required trainings for the team</b></p><ul style="margin:0 0 8px 18px;line-height:1.4">'+t.types.map(function(r){return '<li>'+esc(r)+'</li>'}).join('')+'</ul>';
+  h+='<p style="text-align:justify;line-height:1.4">The appointed members are expected to perform their duties diligently, complete the required trainings, attend meetings, keep proper records, and report to management any matter affecting the team’s functions. This appointment takes effect on the date stated above.</p>';
+  h+='<table style="width:100%;margin-top:22px"><tr><td style="width:50%;vertical-align:top">Appointed by:<br><br><br><b>'+esc(tmSet.by||'_______________________')+'</b><br>'+esc(tmSet.byPos||'Position')+'</td><td style="vertical-align:top">Date signed:<br><br><br>_______________________</td></tr></table>';
+  h+='<p style="margin:22px 0 4px"><b>Conforme</b> <span style="font-size:10pt">(I accept this appointment and understand my responsibilities.)</span></p>';
+  h+='<table style="border-collapse:collapse;width:100%"><tr><th '+H+'>Name</th><th '+H+'>Signature</th><th '+H+'>Date</th></tr>';
+  (mem.length?mem:[{name:''},{name:''},{name:''},{name:''}]).forEach(function(m){h+='<tr><td '+S+'>'+esc(m.name)+'&nbsp;</td><td '+S+'>&nbsp;<br>&nbsp;</td><td '+S+'>&nbsp;</td></tr>'});
+  h+='</table>';
+  h+='<p style="margin:18px 0 4px"><b>Revision history</b></p><table style="border-collapse:collapse;width:100%"><tr><th '+H+'>Rev. no.</th><th '+H+'>Date</th><th '+H+'>Description of revision</th><th '+H+'>Revised by</th></tr>';
+  tmRevs(t).forEach(function(r){h+='<tr><td '+S+'>'+esc(r.rev)+'</td><td '+S+'>'+(r.date?esc(fmtDate(r.date)):'&nbsp;')+'</td><td '+S+'>'+esc(r.desc)+'</td><td '+S+'>'+esc(r.by)+'&nbsp;</td></tr>'});
+  return h+'</table></div>'}
+function tmAnnex(t){var S=TM_S,H=TM_H,mem=tmSorted(t),req=t.types||[];
+  var h='<div style="font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#000">';
+  h+='<p style="text-align:center;margin:0"><b style="font-size:13pt">ANNEX – TRAINING RECORD OF APPOINTED MEMBERS</b></p><p style="text-align:center;margin:2px 0 4px">'+esc(t.name)+'</p><p style="text-align:center;margin:0 0 10px;font-size:10pt"><b>Date/time of assessment:</b> '+esc(fdt(new Date()))+'</p>';
+  h+=req.length?'<p style="margin:4px 0"><b>Required trainings:</b> '+esc(req.join('; '))+'</p><p style="margin:4px 0;font-size:10pt">Members and trainings shown in <span style="'+TM_RED+'"><b>red</b></span> have not yet been completed (no Passed record).</p>':'<p style="margin:4px 0;font-size:10pt">No required trainings have been set for this team. All recorded trainings of each member are listed below.</p>';
+  if(!mem.length)h+='<p>No members have been added to this team yet.</p>';
+  mem.forEach(function(m){var s=tmStatus(t,m),bad=s.bad.length;
+    h+='<p style="margin:14px 0 3px;'+(bad?TM_RED:'')+'"><b>'+(bad?'\u26a0 ':'')+esc(m.name)+'</b> — '+esc([m.position,m.dept,m.role].filter(Boolean).join(' / '))+(tmEmpId(m)?' (Code: '+esc(tmEmpId(m))+')':'')+(bad?' &nbsp;<b>[REQUIRED TRAINING NOT COMPLETED]</b>':'')+'</p>';
+    if(m.resp)h+='<p style="margin:0 0 4px;font-size:10pt"><i>Individual responsibility:</i> '+esc(m.resp)+'</p>';
+    if(req.length){h+='<table style="border-collapse:collapse;width:100%;margin-bottom:6px"><tr><th '+H+'>Required training</th><th '+H+'>Status</th><th '+H+'>Date completed</th></tr>';
+      s.items.forEach(function(i){var ok=i.state==='done';h+='<tr style="'+(ok?'':TM_BG)+'"><td '+S+'>'+esc(i.t)+'</td><td '+S+'><span style="'+(ok?'':TM_RED+'font-weight:bold')+'">'+esc(tmStateTxt(i))+'</span></td><td '+S+'>'+(ok&&i.rec&&i.rec.date?esc(fmtDate(i.rec.date)):(i.state==='failed'&&i.rec&&i.rec.date?'Last taken: '+esc(fmtDate(i.rec.date)):'&nbsp;'))+'</td></tr>'});
+      h+='</table>'}
+    h+='<table style="border-collapse:collapse;width:100%"><tr><th '+H+'>Date attended</th><th '+H+'>Training type</th><th '+H+'>Training title</th><th '+H+'>Hours</th><th '+H+'>Score</th><th '+H+'>Result</th></tr>';
+    if(s.recs.length)s.recs.forEach(function(r){var sc=(r.actual!==''&&r.actual!=null)?esc(r.actual)+(r.expected!==''&&r.expected!=null?' / '+esc(r.expected):''):'';
+      h+='<tr><td '+S+'>'+(r.date?esc(fmtDate(r.date)):'&nbsp;')+'</td><td '+S+'>'+esc(tt(r))+'</td><td '+S+'>'+esc(r.title)+'</td><td '+S+'>'+esc(r.hours)+'</td><td '+S+'>'+sc+'</td><td '+S+'><span style="'+(r.status==='Failed'?TM_RED:'')+'">'+esc(r.status)+'</span></td></tr>'});
+    else h+='<tr><td '+S+' colspan="6"><span style="'+TM_RED+'">No training records found for this member.</span></td></tr>';
+    h+='</table>'});
+  return h+'</div>'}
+function tmFull(t,idx,pv){return tmMemo(t,idx)+(pv?'<hr style="margin:26px 0;border:0;border-top:2px dashed #999">':'<br clear="all" style="page-break-before:always">')+tmAnnex(t)}
+function tmPreview(id){var t=tmGet(id),i=teams.indexOf(t);if(!t)return;
+  $('pvBox').innerHTML='<div class="row" style="margin:0 0 10px"><button class="btn" id="tmPvDl">Download .doc</button><button class="btn sec" id="tmPvClose">Close</button></div><div style="background:#fff;color:#000;padding:18px;border-radius:6px;overflow-x:auto">'+tmFull(t,i,true)+'</div>';
+  $('pv').hidden=false;$('tmPvClose').onclick=function(){$('pv').hidden=true};$('tmPvDl').onclick=function(){tmDownload([id])}}
+function tmFile(x){return x.replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,60)}
+function tmDownload(ids){
+  var miss=ids.map(tmGet).filter(function(t){if(!t)return false;var d=tmDates(t);return !d.memo||!d.eff}).map(function(t){return t.name});
+  if(miss.length&&!confirm('Memo date and/or effectivity date is not set for: '+miss.slice(0,5).join('; ')+(miss.length>5?'…':'')+'.\n\nDownload anyway? (Set them in Appointment details, or in Manage for each team.)'))return;
+  var parts=ids.map(function(id){var t=tmGet(id);return t?tmFull(t,teams.indexOf(t),false):''}).filter(Boolean);if(!parts.length)return;
+  var body=parts.join('<br clear="all" style="page-break-before:always">');
+  var doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Appointment Memorandum</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]--><style>@page{size:8.5in 11in;margin:0.8in}body{font-family:Arial,sans-serif}</style></head><body>'+body+'</body></html>';
+  var name=ids.length===1?'Appointment_'+tmFile(tmGet(ids[0]).name)+'_Rev'+tmRevNo(tmGet(ids[0]))+(tmDates(tmGet(ids[0])).memo?'_'+tmDates(tmGet(ids[0])).memo:''):'Appointment_of_All_Teams'+(tmSet.date?'_'+tmSet.date:'');
+  var blob=new Blob(['\ufeff'+doc],{type:'application/msword'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.doc';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+$('tmAll').onclick=function(){tmDownload(teams.map(function(t){return t.id}))};
+
+/* ===== Non-conformity & Dashboard ===== */
+var NCKEY='training_nc_v1',ncs=[],ncCur=null;
+var NC_CATS={ft:'Failed training result of employees',ut:'Unconducted training required for the position',cw:'Failed competency result – written exam',cp:'Failed competency result – practical exam',tm:'Absence of training – appointed team member',sc:'Non-fulfilment of the scheduled training for the month',man:'Other (manual entry)'};
+var NC_ST=['Open','In progress','Closed'],ACT_ST=['Planned','In progress','Implemented'];
+function tmToday(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function ncSaveAll(){try{localStorage.setItem(NCKEY,JSON.stringify(ncs))}catch(e){}}
+function ncLoad(){try{ncs=JSON.parse(localStorage.getItem(NCKEY)||'[]')}catch(e){ncs=[]}if(!Array.isArray(ncs))ncs=[];
+  ncs.forEach(function(n){n.rca=n.rca||{};['man','method','material','machine','environment','time'].forEach(function(k){if(n.rca[k]==null)n.rca[k]=''});if(!Array.isArray(n.corrections))n.corrections=[];if(!Array.isArray(n.actions))n.actions=[]});
+  $('ncCat').innerHTML=Object.keys(NC_CATS).map(function(k){return '<option value="'+k+'">'+esc(NC_CATS[k])+'</option>'}).join('');
+  $('ncFCat').innerHTML='<option value="">All categories</option>'+Object.keys(NC_CATS).map(function(k){return '<option value="'+k+'">'+esc(NC_CATS[k])+'</option>'}).join('');
+  $('ncCorSt').innerHTML=ACT_ST.map(function(x){return '<option>'+x+'</option>'}).join('');$('ncActSt').innerHTML=$('ncCorSt').innerHTML}
+function ncGet(id){return ncs.filter(function(n){return n.id===id})[0]}
+function ncNext(){var m=0;ncs.forEach(function(n){var v=parseInt(String(n.no||'').split('-').pop(),10);if(v>m)m=v});return 'NC-'+new Date().getFullYear()+'-'+('000'+(m+1)).slice(-4)}
+function ncOver(n){return n.status!=='Closed'&&n.schedule&&n.schedule<tmToday()}
+function ncNewObj(o){return {id:uid(),no:ncNext(),key:o.key||'',cat:o.cat,subject:o.subject||'',detail:o.detail||'',detected:new Date().toISOString(),schedule:'',status:'Open',closedAt:'',cleared:false,rca:{man:'',method:'',material:'',machine:'',environment:'',time:''},corrections:[],actions:[]}}
+
+function ncDetect(){var out=[],pass=parseFloat($('caPass').value)||70;
+  rows.forEach(function(r){if(r.status==='Failed')out.push({key:'ft:'+r.id,cat:'ft',subject:nm(r)+(r.empId?' ('+r.empId+')':''),detail:'Failed '+tt(r)+(r.title&&r.title!==tt(r)?' – '+r.title:'')+(r.date?' on '+fmtDate(r.date):'')+' (score '+r.actual+' / '+r.expected+'). Company / Agency: '+r.company+'.'})});
+  tnaData().forEach(function(d){d.needs.forEach(function(n){if(n.retake)return;out.push({key:'ut:'+((d.r.empId||nm(d.r)).toLowerCase())+'|'+d.r.company+'|'+n.t,cat:'ut',subject:nm(d.r)+(d.r.empId?' ('+d.r.empId+')':''),detail:'Required training for the position “'+d.pos+'” has not been conducted: '+n.t+'. Company / Agency: '+d.r.company+'.'})})});
+  tests.forEach(function(t){var pct=pctOf(t.score,t.total),sj=tName(t)+' ('+t.empNo+')';
+    if(pct<pass)out.push({key:'cw:'+t.id,cat:'cw',subject:sj,detail:'Written exam score '+t.score+'/'+t.total+' ('+pct+'%) is below the '+pass+'% pass mark. Position: '+t.position+' ('+t.code+'). Test taken: '+fdt(t.date)+'.'});
+    var f=t.skills.filter(function(s){return s.rate==='1'});
+    if(t.asmt&&f.length)out.push({key:'cp:'+t.id,cat:'cp',subject:sj,detail:'Practical skills rated Not Passed: '+f.map(function(s){return s.t}).join('; ')+'. Position: '+t.position+' ('+t.code+'). Assessed: '+fdt(t.asmt.date)+'.'})});
+  teams.forEach(function(t){t.members.forEach(function(m){var s=tmStatus(t,m);if(s.bad.length)out.push({key:'tm:'+t.id+'|'+m.id,cat:'tm',subject:m.name+(tmEmpId(m)?' ('+tmEmpId(m)+')':''),detail:'Appointed to “'+t.name+'” as '+m.role+' but required training is not completed: '+s.bad.map(function(i){return i.t+' ('+(i.state==='failed'?'failed':'not attended')+')'}).join('; ')+'.'})})});
+  cal.forEach(function(e){if(calMonthEnded(e)&&e.status!=='Completed')out.push({key:'sc:'+e.id,cat:'sc',subject:e.type+(e.title?' – '+e.title:''),detail:'Training scheduled for '+calMonthName(e.date)+' (target date '+fmtDate(e.date)+') was not fulfilled. Status: '+e.status+'. Participants: '+(e.pos||'All employees')+(e.trainer?'. Trainer: '+e.trainer:'')+'.'})});
+  return out}
+function ncPending(){var k={};ncs.forEach(function(n){if(n.key)k[n.key]=1});return ncDetect().filter(function(d){return!k[d.key]}).length}
+function ncScan(){var det=ncDetect(),by={},cur={},added=0;ncs.forEach(function(n){if(n.key)by[n.key]=n});
+  det.forEach(function(d){cur[d.key]=1;var n=by[d.key];
+    if(n){n.cleared=false;if(n.status!=='Closed'){n.subject=d.subject;n.detail=d.detail}}
+    else{ncs.push(ncNewObj(d));added++}});
+  ncs.forEach(function(n){if(n.key&&!cur[n.key])n.cleared=true});ncSaveAll();return added}
+
+function ncCounts(n){var c=n.corrections,a=n.actions,f=function(l){return l.filter(function(x){return x.status==='Implemented'}).length};return 'Correction: '+f(c)+'/'+c.length+'<div class="sub" style="margin:0;font-size:.78rem">Corrective action: '+f(a)+'/'+a.length+'</div>'}
+function ncStPill(n){var cl=n.status==='Open'?'pill Failed':n.status==='Closed'?'pill Passed':'pill';var st=n.status==='In progress'?' style="color:var(--accent)"':'';return '<span class="'+cl+'"'+st+'>'+esc(n.status)+'</span>'}
+function ncRender(){var q=($('ncQ').value||'').toLowerCase().trim(),fc=$('ncFCat').value,fs=$('ncFSt').value;
+  var c={Open:0,'In progress':0,Closed:0,over:0};ncs.forEach(function(n){c[n.status]++;if(ncOver(n))c.over++});
+  $('ncStats').innerHTML=[[ncs.length,'Total NCs'],[c.Open,'Open'],[c['In progress'],'In progress'],[c.Closed,'Closed'],[c.over,'Overdue']].map(function(x){return '<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('');
+  var pd=ncPending(),pm=$('ncPending');pm.className=pd?'msg err':'msg';pm.textContent=pd?pd+' condition'+(pd>1?'s':'')+' found in the records '+(pd>1?'are':'is')+' not yet logged. Click “Scan records for non-conformities”.':'';
+  var list=ncs.filter(function(n){if(fc&&n.cat!==fc)return false;if(fs==='__over'){if(!ncOver(n))return false}else if(fs&&n.status!==fs)return false;
+    return !q||[n.no,n.subject,n.detail,NC_CATS[n.cat]].join(' ').toLowerCase().indexOf(q)>-1}).sort(function(a,b){return a.no<b.no?1:-1});
+  var sm='<div class="sub" style="margin:0;font-size:.78rem">';
+  $('ncBody').innerHTML=list.length?list.map(function(n){return '<tr><td style="white-space:nowrap"><button class="lnk" data-no="'+n.id+'">Open</button><button class="del" data-nd="'+n.id+'">Delete</button></td><td><b>'+esc(n.no)+'</b></td><td>'+esc(NC_CATS[n.cat]||n.cat)+'</td><td><b>'+esc(n.subject)+'</b>'+sm+esc(n.detail)+'</div>'+(n.cleared&&n.status!=='Closed'?'<div class="ok" style="font-size:.78rem">Condition no longer found in the records. Verify and close.</div>':'')+'</td><td>'+esc(fdt(n.detected))+'</td><td>'+(n.schedule?esc(fmtDate(n.schedule)):'<span class="sub">Not set</span>')+(ncOver(n)?' <span class="err"><b>Overdue</b></span>':'')+'</td><td>'+ncStPill(n)+(n.closedAt?sm+'Closed: '+esc(fdt(n.closedAt))+'</div>':'')+'</td><td>'+ncCounts(n)+'</td></tr>'}).join(''):'<tr><td colspan="8" class="empty">No non-conformities. Click “Scan records for non-conformities” or add one manually.</td></tr>'}
+function ncActRender(kind){var n=ncGet(ncCur);if(!n)return;var list=n[kind==='cor'?'corrections':'actions'],tb=$(kind==='cor'?'ncCorBody':'ncActBody'),td=tmToday();
+  tb.innerHTML=list.length?list.map(function(a){var ov=a.status!=='Implemented'&&a.date&&a.date<td;
+    return '<tr><td style="white-space:nowrap"><button class="del" data-ad="'+a.id+'">Delete</button></td><td style="white-space:pre-wrap">'+esc(a.text)+'</td><td>'+esc(a.resp)+'</td><td>'+(a.date?esc(fmtDate(a.date)):'<span class="sub">—</span>')+(ov?' <span class="err"><b>Overdue</b></span>':'')+'</td><td><select data-as="'+a.id+'" style="width:auto">'+ACT_ST.map(function(s){return '<option'+(s===a.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select>'+(a.doneAt?'<div class="sub" style="margin:0;font-size:.76rem">Implemented: '+esc(fdt(a.doneAt))+'</div>':'')+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">None added yet.</td></tr>'}
+function ncOpenEd(id){var n=ncGet(id);if(!n)return;ncCur=id;$('ncEd').hidden=false;$('ncEdNo').textContent=n.no;
+  $('ncCat').value=n.cat;$('ncSubject').value=n.subject;$('ncDetected').value=fdt(n.detected);$('ncSched').value=n.schedule||'';$('ncStatus').value=n.status;$('ncDetail').value=n.detail;
+  $('rcMan').value=n.rca.man;$('rcMethod').value=n.rca.method;$('rcMaterial').value=n.rca.material;$('rcMachine').value=n.rca.machine;$('rcEnvironment').value=n.rca.environment;$('rcTime').value=n.rca.time;
+  ['ncMsg','ncCorMsg','ncActMsg'].forEach(function(i){$(i).textContent=''});ncActRender('cor');ncActRender('act');$('ncEd').scrollIntoView({behavior:'smooth',block:'start'})}
+$('ncScan').onclick=function(){var a=ncScan();ncRender();var m=$('ncPending');m.className='msg ok';m.textContent=a?a+' new non-conformit'+(a>1?'ies':'y')+' logged.':'Scan complete. No new non-conformities found.'};
+$('ncAddMan').onclick=function(){var n=ncNewObj({cat:'man'});n.subject='';ncs.push(n);ncSaveAll();ncRender();ncOpenEd(n.id)};
+['ncQ','ncFCat','ncFSt'].forEach(function(i){$(i).oninput=ncRender;$(i).onchange=ncRender});
+$('ncClose').onclick=function(){$('ncEd').hidden=true;ncCur=null;ncRender()};
+$('ncSave').onclick=function(){var n=ncGet(ncCur),m=$('ncMsg');if(!n)return;var sj=$('ncSubject').value.trim();
+  if(!sj){m.className='msg err';m.textContent='Employee / subject is required.';return}
+  var st=$('ncStatus').value;
+  if(st==='Closed'&&n.status!=='Closed'){var open=n.corrections.concat(n.actions).filter(function(a){return a.status!=='Implemented'}).length;
+    if((open||!n.actions.length)&&!confirm((open?open+' correction/corrective action item(s) are not yet Implemented. ':'No corrective action has been recorded. ')+'Close this non-conformity anyway?'))return}
+  n.cat=$('ncCat').value;n.subject=sj;n.detail=$('ncDetail').value.trim();n.schedule=$('ncSched').value;
+  n.rca={man:$('rcMan').value.trim(),method:$('rcMethod').value.trim(),material:$('rcMaterial').value.trim(),machine:$('rcMachine').value.trim(),environment:$('rcEnvironment').value.trim(),time:$('rcTime').value.trim()};
+  if(st==='Closed'&&n.status!=='Closed')n.closedAt=new Date().toISOString();if(st!=='Closed')n.closedAt='';n.status=st;
+  ncSaveAll();ncRender();m.className='msg ok';m.textContent='Saved '+fdt(new Date())+'.'};
+$('ncBody').onclick=function(e){var d=e.target.dataset;if(d.no)ncOpenEd(d.no);
+  if(d.nd&&confirm('Delete this non-conformity and its actions?')){ncs=ncs.filter(function(n){return n.id!==d.nd});ncSaveAll();if(ncCur===d.nd){$('ncEd').hidden=true;ncCur=null}ncRender()}};
+function ncActAdd(kind){var n=ncGet(ncCur),p=kind==='cor'?'ncCor':'ncAct',m=$(p+'Msg'),tx=$(p+'Text').value.trim();if(!n)return;
+  if(!tx){m.className='msg err';m.textContent='Please describe the '+(kind==='cor'?'correction':'corrective action')+'.';return}
+  var a={id:uid(),text:tx,resp:$(p+'Resp').value.trim(),date:$(p+'Date').value,status:$(p+'St').value,addedAt:new Date().toISOString(),doneAt:''};if(a.status==='Implemented')a.doneAt=a.addedAt;
+  n[kind==='cor'?'corrections':'actions'].push(a);if(n.status==='Open'){n.status='In progress';$('ncStatus').value='In progress'}
+  ncSaveAll();ncActRender(kind);ncRender();[p+'Text',p+'Resp',p+'Date'].forEach(function(i){$(i).value=''});$(p+'St').value='Planned';m.className='msg ok';m.textContent='Added.'}
+$('ncCorAdd').onclick=function(){ncActAdd('cor')};$('ncActAdd').onclick=function(){ncActAdd('act')};
+function ncActHandlers(kind,id){var tb=$(id),key=kind==='cor'?'corrections':'actions';
+  tb.onclick=function(e){var d=e.target.dataset.ad,n=ncGet(ncCur);if(d&&n&&confirm('Delete this item?')){n[key]=n[key].filter(function(a){return a.id!==d});ncSaveAll();ncActRender(kind);ncRender()}};
+  tb.onchange=function(e){var d=e.target.dataset.as,n=ncGet(ncCur);if(!d||!n)return;var a=n[key].filter(function(x){return x.id===d})[0];if(!a)return;
+    a.status=e.target.value;a.doneAt=a.status==='Implemented'?new Date().toISOString():'';
+    if(n.status==='Open'&&a.status!=='Planned'){n.status='In progress';$('ncStatus').value='In progress'}
+    ncSaveAll();ncActRender(kind);ncRender()}}
+ncActHandlers('cor','ncCorBody');ncActHandlers('act','ncActBody');
+
+/* dashboard */
+function dBar(label,val,max,color){var pc=max?Math.round(val/max*100):0;return '<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;font-size:.85rem;gap:8px"><span>'+esc(label)+'</span><b>'+val+'</b></div><div style="height:9px;background:var(--line);border-radius:6px;overflow:hidden"><div style="width:'+pc+'%;height:100%;background:'+color+'"></div></div></div>'}
+function dCard(title,inner){return '<div class="card"><div class="sect" style="margin:0 0 6px">'+esc(title)+'</div>'+inner+'</div>'}
+function dashRender(){$('dashAsOf').textContent=fdt(new Date());
+  var OK='var(--ok)',BAD='var(--bad)',AC='var(--accent)',MU='var(--muted)';
+  var pas=rows.filter(function(r){return r.status==='Passed'}).length,fai=rows.filter(function(r){return r.status==='Failed'}).length,gr=pas+fai,rate=gr?Math.round(pas/gr*100):0;
+  var emps={};rows.forEach(function(r){emps[(r.empId||nm(r)).toLowerCase()+'|'+r.company]=1});
+  var tna=tnaData(),withReq=tna.filter(function(d){return d.req.length}),gaps=withReq.filter(function(d){return d.needs.length});
+  var mem=0,flag=0,tmFl=[];teams.forEach(function(t){var f=0;t.members.forEach(function(m){mem++;if(tmStatus(t,m).bad.length){flag++;f++}});if(f)tmFl.push({t:t,f:f})});
+  var pass=parseFloat($('caPass').value)||70,wf=0,pf=0,pend=0;tests.forEach(function(t){if(pctOf(t.score,t.total)<pass)wf++;if(t.asmt&&t.skills.some(function(s){return s.rate==='1'}))pf++;if(!t.asmt)pend++});
+  var c={Open:0,'In progress':0,Closed:0,over:0},bc={};Object.keys(NC_CATS).forEach(function(k){bc[k]={t:0,o:0}});
+  var cor=[],act=[];ncs.forEach(function(n){c[n.status]++;if(ncOver(n))c.over++;if(bc[n.cat]){bc[n.cat].t++;if(n.status!=='Closed')bc[n.cat].o++}cor=cor.concat(n.corrections);act=act.concat(n.actions)});
+  var cnt=function(l,s){return l.filter(function(a){return a.status===s}).length};
+  var h='<div class="stats">'+[[rows.length,'Training records'],[Object.keys(emps).length,'Employees'],[rate+'%','Training pass rate'],[c.Open+c['In progress'],'Open non-conformities'],[c.over,'Overdue non-conformities'],[calMonthStats().done+' / '+calMonthStats().tot,'Scheduled trainings completed this month'],[flag,'Team members with missing training']].map(function(x){return '<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('')+'</div>';
+  var pd=ncPending();if(pd)h+='<div class="msg err" style="margin:0 0 10px">'+pd+' condition'+(pd>1?'s':'')+' in the records '+(pd>1?'are':'is')+' not yet logged as non-conformities. Open the Non-conformity tab and click Scan.</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px">';
+  h+=dCard('Non-conformity status',dBar('Open',c.Open,ncs.length,BAD)+dBar('In progress',c['In progress'],ncs.length,AC)+dBar('Closed',c.Closed,ncs.length,OK)+dBar('Overdue',c.over,ncs.length,BAD));
+  h+=dCard('Non-conformities by category (open / total)',Object.keys(NC_CATS).map(function(k){return dBar(NC_CATS[k]+' ('+bc[k].o+' / '+bc[k].t+')',bc[k].t,ncs.length,bc[k].o?BAD:OK)}).join(''));
+  h+=dCard('Corrections',dBar('Implemented',cnt(cor,'Implemented'),cor.length,OK)+dBar('In progress',cnt(cor,'In progress'),cor.length,AC)+dBar('Planned',cnt(cor,'Planned'),cor.length,MU));
+  h+=dCard('Corrective actions',dBar('Implemented',cnt(act,'Implemented'),act.length,OK)+dBar('In progress',cnt(act,'In progress'),act.length,AC)+dBar('Planned',cnt(act,'Planned'),act.length,MU));
+  h+=dCard('Training results',dBar('Passed',pas,gr,OK)+dBar('Failed',fai,gr,BAD));
+  var cc={},cm=calMonthStats(),cov=cal.filter(calOverdue).length;CAL_ST.forEach(function(x){cc[x]=cal.filter(function(e){return e.status===x}).length});
+  h+=dCard('Training calendar (all schedules)',CAL_ST.map(function(x){return dBar(x,cc[x],cal.length,x==='Completed'?OK:x==='Cancelled'||x==='Postponed'?BAD:x==='Not scheduled'?MU:AC)}).join('')+dBar('Overdue',cov,cal.length,BAD));
+  h+=dCard('Training calendar – this month',dBar('Scheduled this month',cm.tot,cm.tot,AC)+dBar('Completed',cm.done,cm.tot,OK)+dBar('Not yet completed',cm.tot-cm.done,cm.tot,BAD)+'<div class="sub" style="font-size:.8rem">'+calMonthName(tmToday())+'</div>');
+  h+=dCard('Training needs by position',dBar('Fully compliant',withReq.length-gaps.length,withReq.length,OK)+dBar('With training needs',gaps.length,withReq.length,BAD)+'<div class="sub" style="font-size:.8rem">'+(tna.length-withReq.length)+' employee(s) have no position or required trainings set.</div>');
+  h+=dCard('Competency tests',dBar('Tests taken',tests.length,tests.length,AC)+dBar('Pending assessment',pend,tests.length,MU)+dBar('Failed written exam (below '+pass+'%)',wf,tests.length,BAD)+dBar('Failed practical (Not Passed)',pf,tests.length,BAD));
+  h+=dCard('Teams',dBar('Teams created',teams.length,teams.length,AC)+dBar('Appointed members',mem,mem,AC)+dBar('Members with missing training',flag,mem,BAD)+(tmFl.length?'<div style="margin-top:8px;font-size:.84rem">'+tmFl.map(function(x){return '<div>\u26a0 '+esc(x.t.name)+' <b class="err">('+x.f+')</b></div>'}).join('')+'</div>':'<div class="sub" style="font-size:.8rem">No team member is missing required training.</div>'));
+  h+='</div>';
+  h+='<div class="sect">Trainings scheduled this month</div><div class="scroll"><table style="min-width:760px"><thead><tr><th>Target date</th><th>Training</th><th>Participants</th><th>Trainer</th><th>Status</th></tr></thead><tbody>'+(cm.list.length?cm.list.sort(function(a,b){return a.date<b.date?-1:1}).map(function(e){return '<tr><td>'+esc(fmtDate(e.date))+(calOverdue(e)?' <span class="err"><b>Overdue</b></span>':'')+'</td><td><b>'+esc(e.type)+'</b>'+(e.title?' – '+esc(e.title):'')+'</td><td>'+esc(e.pos||'All employees')+'</td><td>'+esc(e.trainer)+'</td><td>'+esc(e.status)+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">No trainings scheduled this month. Set them in the Training Calendar tab.</td></tr>')+'</tbody></table></div>';
+  var att=ncs.filter(function(n){return n.status!=='Closed'}).sort(function(a,b){var x=a.schedule||'9999',y=b.schedule||'9999';return x<y?-1:x>y?1:0}).slice(0,10);
+  h+='<div class="sect">Non-conformities needing attention (earliest schedule first)</div><div class="scroll"><table style="min-width:760px"><thead><tr><th>NC no.</th><th>Category</th><th>Employee / subject</th><th>Schedule date</th><th>Status</th></tr></thead><tbody>'+(att.length?att.map(function(n){return '<tr><td><b>'+esc(n.no)+'</b></td><td>'+esc(NC_CATS[n.cat])+'</td><td>'+esc(n.subject)+'</td><td>'+(n.schedule?esc(fmtDate(n.schedule)):'<span class="sub">Not set</span>')+(ncOver(n)?' <span class="err"><b>Overdue</b></span>':'')+'</td><td>'+ncStPill(n)+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">No open non-conformities.</td></tr>')+'</tbody></table></div>';
+  $('dashBody').innerHTML=h}
+$('dashRefresh').onclick=dashRender;
+
+/* ===== Training Calendar ===== */
+var CALKEY='training_calendar_v1',cal=[],calEditing=null;
+var CAL_ST=['Not scheduled','Scheduled','Ongoing','Completed','Postponed','Cancelled'];
+function calSave(){try{localStorage.setItem(CALKEY,JSON.stringify(cal))}catch(e){var m=$('calMsg');m.className='msg err';m.textContent='Browser storage is blocked, so the calendar may not be kept.'}}
+function calLoad(){try{cal=JSON.parse(localStorage.getItem(CALKEY)||'[]')}catch(e){cal=[]}if(!Array.isArray(cal))cal=[];
+  $('calStatus').innerHTML=CAL_ST.map(function(x){return '<option'+(x==='Scheduled'?' selected':'')+'>'+x+'</option>'}).join('')}
+function calFillSel(){var ct=$('calType').value,cp=$('calPos').value,ft=$('calFType').value,fs=$('calFSt').value;
+  $('calType').innerHTML=opts(TTYPES,'Select training type…');$('calType').value=ct;
+  $('calPos').innerHTML='<option value="">(All employees)</option>'+positions.map(function(p){return '<option>'+esc(p.name)+'</option>'}).join('');$('calPos').value=cp;
+  $('calFType').innerHTML='<option value="">All training types</option>'+TTYPES.map(function(x){return '<option>'+esc(x)+'</option>'}).join('');$('calFType').value=ft;
+  $('calFSt').innerHTML='<option value="">All statuses</option>'+CAL_ST.map(function(x){return '<option>'+x+'</option>'}).join('')+'<option value="__over">Overdue</option>';$('calFSt').value=fs}
+function calOverdue(e){return !!e.date&&e.date<tmToday()&&e.status!=='Completed'&&e.status!=='Cancelled'}
+function calMonthEnded(e){return !!e.date&&e.date.slice(0,7)<tmToday().slice(0,7)}
+function calMonthStats(){var ym=tmToday().slice(0,7),l=cal.filter(function(e){return e.date&&e.date.slice(0,7)===ym});return {list:l,tot:l.length,done:l.filter(function(e){return e.status==='Completed'}).length}}
+function calMonthName(d){var x=new Date(d+'T00:00:00');return isNaN(x)?d:x.toLocaleDateString('en-US',{year:'numeric',month:'long'})}
+function calClear(){calEditing=null;['calTitle','calDate','calTime','calTrainer','calVenue','calActual','calRemarks'].forEach(function(i){$(i).value=''});$('calType').value='';$('calPos').value='';$('calStatus').value='Scheduled';$('calSave').textContent='Save schedule'}
+function calRender(){calFillSel();var q=($('calQ').value||'').toLowerCase().trim(),fm=$('calFMonth').value,ft=$('calFType').value,fs=$('calFSt').value;
+  var c={tot:cal.length,done:0,over:0,uns:0},ms=calMonthStats();cal.forEach(function(e){if(e.status==='Completed')c.done++;if(calOverdue(e))c.over++;if(!e.date||e.status==='Not scheduled')c.uns++});
+  $('calStats').innerHTML=[[c.tot,'Training schedules'],[ms.done+' / '+ms.tot,'Completed this month'],[c.done,'Completed (all)'],[c.over,'Overdue'],[c.uns,'Not yet scheduled']].map(function(x){return '<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('');
+  var list=cal.filter(function(e){if(fm&&(!e.date||e.date.slice(0,7)!==fm))return false;if(ft&&e.type!==ft)return false;if(fs==='__over'){if(!calOverdue(e))return false}else if(fs&&e.status!==fs)return false;
+    return !q||[e.type,e.title,e.trainer,e.venue,e.pos,e.remarks].join(' ').toLowerCase().indexOf(q)>-1}).sort(function(a,b){var x=a.date||'9999',y=b.date||'9999';return x<y?-1:x>y?1:0});
+  var sm='<div class="sub" style="margin:0;font-size:.76rem">';
+  $('calBody').innerHTML=list.length?list.map(function(e){return '<tr><td style="white-space:nowrap"><button class="lnk" data-ce="'+e.id+'">Edit</button><button class="del" data-cd="'+e.id+'">Delete</button></td><td>'+(e.date?esc(fmtDate(e.date))+(e.time?sm+esc(e.time)+'</div>':''):'<span class="err">Not set</span>')+(calOverdue(e)?'<div class="err" style="font-size:.78rem"><b>Overdue</b></div>':'')+'</td><td><b>'+esc(e.type)+'</b>'+(e.title?sm+esc(e.title)+'</div>':'')+'</td><td>'+esc(e.pos||'All employees')+'</td><td>'+esc(e.trainer)+(e.venue?sm+esc(e.venue)+'</div>':'')+'</td><td><select data-cs="'+e.id+'" style="width:auto">'+CAL_ST.map(function(s){return '<option'+(s===e.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select></td><td>'+(e.actual?esc(fmtDate(e.actual)):'<span class="sub">—</span>')+'</td><td style="white-space:pre-wrap">'+esc(e.remarks||'')+'</td><td>'+esc(fdt(e.updatedAt))+'</td></tr>'}).join(''):'<tr><td colspan="9" class="empty">No training schedules yet. Add one above or load the required trainings from Position.</td></tr>'}
+$('calSave').onclick=function(){var m=$('calMsg'),o={type:$('calType').value,title:$('calTitle').value.trim(),date:$('calDate').value,time:$('calTime').value,pos:$('calPos').value,trainer:$('calTrainer').value.trim(),venue:$('calVenue').value.trim(),status:$('calStatus').value,actual:$('calActual').value,remarks:$('calRemarks').value.trim()};
+  if(!o.type||!o.date){m.className='msg err';m.textContent='Training type and target date are required.';return}
+  if(o.status==='Completed'&&!o.actual)o.actual=tmToday();o.updatedAt=new Date().toISOString();
+  if(calEditing){cal=cal.map(function(e){return e.id===calEditing?Object.assign({},e,o):e});m.textContent='Schedule updated.'}else{o.id=uid();cal.push(o);m.textContent='Schedule saved.'}
+  m.className='msg ok';calSave();calClear();calRender()};
+$('calReset').onclick=function(){calClear();$('calMsg').textContent=''};
+$('calLoad').onclick=function(){var m=$('calMsg'),map={},add=0;positions.forEach(function(p){(p.types||[]).forEach(function(t){(map[t]=map[t]||[]).push(p.name)})});
+  Object.keys(map).forEach(function(t){if(cal.some(function(e){return e.type===t}))return;cal.push({id:uid(),type:t,title:'',date:'',time:'',pos:map[t].length===1?map[t][0]:'',trainer:'',venue:'',status:'Not scheduled',actual:'',remarks:map[t].length>1?'Required for: '+map[t].join(', '):'',updatedAt:new Date().toISOString()});add++});
+  calSave();calRender();m.className=add?'msg ok':'msg';m.textContent=add?add+' required training'+(add>1?'s':'')+' added as “Not scheduled”. Click Edit on each to set the target date.':'Nothing to add: every required training already has a calendar entry (or no required trainings are set in Position).'};
+['calQ','calFMonth','calFType','calFSt'].forEach(function(i){$(i).oninput=calRender;$(i).onchange=calRender});
+$('calBody').onclick=function(e){var d=e.target.dataset;
+  if(d.cd&&confirm('Delete this schedule?')){cal=cal.filter(function(x){return x.id!==d.cd});calSave();calRender()}
+  if(d.ce){var x=cal.filter(function(y){return y.id===d.ce})[0];if(!x)return;calEditing=x.id;calFillSel();
+    $('calType').value=x.type;$('calTitle').value=x.title||'';$('calDate').value=x.date||'';$('calTime').value=x.time||'';$('calPos').value=x.pos||'';$('calTrainer').value=x.trainer||'';$('calVenue').value=x.venue||'';$('calStatus').value=x.status;$('calActual').value=x.actual||'';$('calRemarks').value=x.remarks||'';
+    $('calSave').textContent='Update schedule';$('calMsg').textContent='';$('calType').scrollIntoView({behavior:'smooth',block:'center'})}};
+$('calBody').onchange=function(e){var id=e.target.dataset.cs;if(!id)return;var x=cal.filter(function(y){return y.id===id})[0];if(!x)return;
+  x.status=e.target.value;if(x.status==='Completed'&&!x.actual)x.actual=tmToday();x.updatedAt=new Date().toISOString();calSave();calRender()};
+
+window.mhcReloadAll = function(keepTab) {
+  load();loadPos();tmFixSaved();loadDoc();loadAcc();tmLoad();ncLoad();calLoad();loadCq();loadTests();loadCustomTypes();buildPosTypes();fillPosSelect();renderPos();render();
+  if (keepTab) {
+    var cur = document.querySelector('.tab[aria-selected="true"]');
+    if (cur) show(cur.dataset.t);
+  } else {
+    show('dash');
+  }
+};
+
+window.mhcReloadAll(false);
+})();
+</script>
+<script src="cloud-sync.js"></script>
+</body>
+</html>
