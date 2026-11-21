@@ -1,3 +1,14 @@
+
+const DEFAULT_ACCOUNTS = [
+  { id: 'acc-admin', name: 'System Administrator', user: 'admin', pass: 'admin123', role: 'Admin', stat: 'Active', co: 'May Harvest Corporation', mail: 'admin@mayharvest.ph' },
+  { id: 'acc-hr', name: 'HR Department', user: 'hr', pass: 'hr123', role: 'HR', stat: 'Active', co: 'May Harvest Corporation', mail: 'hr@mayharvest.ph' },
+  { id: 'acc-doc', name: 'Document Controller', user: 'doccontrol', pass: 'doc123', role: 'Document Control', stat: 'Active', co: 'May Harvest Corporation', mail: 'doccontrol@mayharvest.ph' },
+  { id: 'acc-ops', name: 'Operations Manager', user: 'opsmanager', pass: 'ops123', role: 'Operations Manager', stat: 'Active', co: 'May Harvest Corporation', mail: 'ops@mayharvest.ph' },
+  { id: 'acc-dept', name: 'Department Head', user: 'depthead', pass: 'dept123', role: 'Department Head', stat: 'Active', co: 'May Harvest Corporation', mail: 'depthead@mayharvest.ph' },
+  { id: 'acc-tl', name: 'Team Leader', user: 'teamleader', pass: 'team123', role: 'Team Leader', stat: 'Active', co: 'May Harvest Corporation', mail: 'teamleader@mayharvest.ph' },
+  { id: 'acc-pres', name: 'Company President', user: 'president', pass: 'pres123', role: 'President', stat: 'Active', co: 'May Harvest Corporation', mail: 'president@mayharvest.ph' }
+];
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -28,7 +39,7 @@ const getInitialState = () => ({
   teamSettings: { co: '', date: '', eff: '', pre: 'APT', by: '', byPos: '' },
   ncs: [],
   docControl: null,
-  accounts: [],
+  accounts: DEFAULT_ACCOUNTS,
   customTypes: [],
   lastUpdated: new Date().toISOString()
 });
@@ -49,7 +60,7 @@ function loadDatabase() {
         teamSettings: (data.teamSettings && typeof data.teamSettings === 'object') ? data.teamSettings : { co: '', date: '', eff: '', pre: 'APT', by: '', byPos: '' },
         ncs: Array.isArray(data.ncs) ? data.ncs : [],
         docControl: data.docControl || null,
-        accounts: Array.isArray(data.accounts) ? data.accounts : [],
+        accounts: (Array.isArray(data.accounts) && data.accounts.length) ? data.accounts : DEFAULT_ACCOUNTS,
         customTypes: Array.isArray(data.customTypes) ? data.customTypes : [],
         lastUpdated: data.lastUpdated || new Date().toISOString()
       };
@@ -164,7 +175,7 @@ function mergeDatabase(currentDB, incoming) {
     updated.docControl = { ...updated.docControl, ...incoming.docControl };
   }
   if (Array.isArray(incoming.accounts)) {
-    updated.accounts = mergeCollection(updated.accounts, incoming.accounts, 'u');
+    updated.accounts = mergeCollection(updated.accounts, incoming.accounts, 'user');
   }
   if (Array.isArray(incoming.customTypes)) {
     const set = new Set([...(updated.customTypes || []), ...incoming.customTypes]);

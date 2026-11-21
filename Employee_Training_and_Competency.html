@@ -53,13 +53,59 @@ code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:.8rem}
 #pv .box{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
 textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
 [hidden]{display:none!important}
+
+/* Role-Based Access Control & Staff Auth */
+/* Role-Based Access Control & Staff Auth Enhancements */
+#mhcAuthBar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; padding:10px 14px; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+.mhc-auth-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:99px; font-size:.82rem; font-weight:600; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; }
+.mhc-auth-pill.logged-in { background:#ecfdf5; border-color:#10b981; color:#065f46; }
+.mhc-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; }
+.mhc-modal-card { background:var(--card); border:1px solid var(--line); border-radius:12px; max-width:490px; width:100%; padding:20px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3); }
+.view-only-banner { display:flex; align-items:center; gap:8px; padding:9px 14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; color:#1e40af; font-size:.84rem; font-weight:500; margin-bottom:12px; }
+.tab[data-restricted="true"] { display:none !important; }
+.quick-role-btn { border:1px solid var(--line); background:var(--bg); color:var(--text); padding:5px 10px; border-radius:6px; font-size:.76rem; cursor:pointer; font-weight:500; }
+.quick-role-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--card); }
+[data-view-only="true"] #tmForm,
+[data-view-only="true"] #ncForm,
+[data-view-only="true"] button.del,
+[data-view-only="true"] #ncNewBtn,
+[data-view-only="true"] #ncSave,
+[data-view-only="true"] #ncDel,
+[data-view-only="true"] #ncClearBtn,
+[data-view-only="true"] #calSave,
+[data-view-only="true"] #calLoad,
+[data-view-only="true"] #clearAll,
+[data-view-only="true"] #copyCsv,
+[data-view-only="true"] button.lnk:not(#tmPvDl):not(#tmPvClose):not([data-vz]) {
+  display:none !important;
+}
+[data-view-only="true"] select:not(#tmTeamSel):not(#ncQ):not(#ncFSt):not(#ncFCat):not(#tnaQ):not(#tnaCo):not(#tnaPos):not(#tnaDept):not(#calQ):not(#calFMonth):not(#calFType):not(#calFSt) {
+  pointer-events:none;
+  opacity:0.85;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+  
+  <div id="mhcAuthBar">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="font-size:1.2rem;">🏢</span>
+      <strong style="color:var(--text); font-size:.92rem;">May Harvest Corporation</strong>
+      <span style="color:var(--muted); font-size:.82rem;">· Training &amp; Competency System</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <div id="authStatusPill" class="mhc-auth-pill">
+        <span id="authStatusDot" style="width:7px; height:7px; border-radius:50%; background:#64748b;"></span>
+        <span id="authStatusText">Employees (No need to log-in)</span>
+      </div>
+      <button type="button" class="btn" id="btnAuthToggle" style="padding:6px 14px; font-size:.82rem; border-radius:8px;">🔐 Staff Login</button>
+    </div>
+  </div>
+
   <h1 id="appTitle">Employee Training &amp; Competency</h1>
   <div id="docMeta" class="sub" style="margin:0 0 4px;font-size:.82rem"></div>
-  <p class="sub">Record trainings one by one, or bulk upload many at once. Data is saved in this browser.</p>
+  <p class="sub">Record trainings one by one, or bulk upload many at once. Powered by May Harvest Real-Time Cloud Sync & Database.</p>
 
   <div class="stats">
     <div class="stat"><b id="sRec">0</b><span>Training records</span></div>
@@ -162,6 +208,7 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
 
   <section id="tna" class="card" hidden>
     <p class="sub" style="margin-top:0">Compares each employee’s training records with the training types required for their position (set in the Position tab). The position is taken from the employee’s most recent entry that has one. A required training counts as done once there is a Passed record of that type.</p>
+    <div id="tnaVoBanner" class="view-only-banner" style="display:none;"></div>
     <div class="stats" id="tnaStats"></div>
     <p class="sub" style="margin:0 0 10px"><b>Date/time of assessment:</b> <span id="tnaAsOf"></span> <span style="font-size:.8rem">(current date and time when this report is generated or refreshed)</span></p>
     <div class="bar">
@@ -224,6 +271,7 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
     <div class="row"><button class="btn" id="ctSubmit" hidden>Submit answers</button><button class="btn sec" id="ctReset">Clear</button></div>
     <div id="ctMsg" class="msg"></div>
     <div id="ctResult" class="card" hidden style="margin-top:12px"></div>
+    <div id="ctEvalSection">
     <div class="sect">Submitted tests &amp; assessor evaluation</div>
     <div class="scroll"><table style="min-width:860px"><thead><tr><th>Actions</th><th>Date</th><th>Emp. no.</th><th>Name</th><th>Position / code</th><th>Written score</th><th>Practical assessment</th></tr></thead><tbody id="ctBody"></tbody></table></div>
     <div id="asBox" class="card" hidden style="margin-top:14px;background:var(--bg)">
@@ -287,7 +335,16 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
       <div><label>Username *</label><input id="acUser"></div>
       <div><label>Email</label><input id="acMail" type="email"></div>
       <div><label>Company / Agency</label><select id="acCo"></select></div>
-      <div><label>Role</label><select id="acRole"><option>Administrator</option><option>Encoder</option><option>Viewer</option></select></div>
+      <div><label>Role</label><select id="acRole">
+  <option value="admin">Administrator (Admin)</option>
+  <option value="hr">Human Resources (HR)</option>
+  <option value="doccontrol">Document Control</option>
+  <option value="opsmanager">Operations Manager</option>
+  <option value="depthead">Department Head</option>
+  <option value="teamleader">Team Leader</option>
+  <option value="president">President</option>
+  <option value="employee">Employee</option>
+</select></div>
       <div><label>Status</label><select id="acStat"><option>Active</option><option>Inactive</option></select></div>
     </div>
     <div class="row"><button class="btn" id="acSave">Add account</button><button class="btn sec" id="acReset">Clear</button></div>
@@ -298,6 +355,7 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
 
   <section id="teams" class="card" hidden>
     <p class="sub" style="margin-top:0">Create and appoint the plant’s teams. Fill in the appointment details once, add the members of each team, then download the Appointment Memorandum (Word file) for one team or for all teams. Edited files open in Microsoft Word.</p>
+    <div id="teamsVoBanner" class="view-only-banner" style="display:none;"></div>
     <div class="sect" style="margin-top:0">Appointment details (used in every memorandum)</div>
     <div class="grid">
       <div><label>Company / Plant name</label><input id="tmCo" placeholder="e.g. May Harvest Corporation – Plant"></div>
@@ -355,11 +413,13 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
 
   <section id="dash" class="card" hidden>
     <div class="row" style="margin:0 0 10px;justify-content:space-between"><div class="sub" style="margin:0">Dashboard as of <b id="dashAsOf"></b></div><button class="btn sec" id="dashRefresh">Refresh</button></div>
+    <div id="dashVoBanner" class="view-only-banner" style="display:none;"></div>
     <div id="dashBody"></div>
   </section>
 
   <section id="nc" class="card" hidden>
     <p class="sub" style="margin-top:0">Register of non-conformities with root-cause analysis (6M), corrections and corrective actions. <b>Scan</b> logs conditions found in the records: failed trainings, required trainings not conducted, failed written and practical competency exams, and appointed team members without the required training. You can also add a manual non-conformity.</p>
+    <div id="ncVoBanner" class="view-only-banner" style="display:none;"></div>
     <div class="stats" id="ncStats"></div>
     <div id="ncPending" class="msg" style="margin:0 0 10px"></div>
     <div class="bar">
@@ -463,6 +523,49 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
 <div id="pv" hidden><div class="box" id="pvBox"></div></div>
 <div id="modal" hidden><img id="mimg" alt="Certificate"></div>
 
+<div id="authModal" class="mhc-modal-overlay" style="display:none;">
+  <div class="mhc-modal-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+      <h3 style="margin:0; font-size:1.05rem; color:var(--text); display:flex; align-items:center; gap:8px;">
+        <span>🔐 Staff Portal Sign In</span>
+      </h3>
+      <button type="button" id="authModalClose" style="background:none; border:none; font-size:1.4rem; color:var(--muted); cursor:pointer;">&times;</button>
+    </div>
+    <p class="sub" style="margin-top:0; font-size:.84rem;">
+      Select an official role or enter your credentials to access your designated system portal.
+    </p>
+
+    <div style="margin-bottom:10px;">
+      <label>Username</label>
+      <input id="loginUser" placeholder="e.g. admin, hr, doccontrol, opsmanager, depthead, teamleader, president">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Enter password (default: admin123, hr123, doc123...)">
+    </div>
+
+    <div id="loginMsg" class="msg" style="margin-bottom:12px;"></div>
+
+    <div class="row" style="margin-top:0; justify-content:space-between; align-items:center;">
+      <button type="button" class="btn sec" id="loginGuestBtn">Stay as Employee (No login)</button>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn sec" id="loginCancel">Close</button>
+        <button type="button" class="btn" id="loginSubmit">Sign In</button>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--line);">
+      <div style="font-size:.76rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">
+        Quick Role Selection (Official Accounts):
+      </div>
+      <div id="quickRoleButtons" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+      <div style="margin-top:8px; font-size:.74rem; color:var(--muted); line-height:1.4;">
+        Default passwords: <code>admin123</code>, <code>hr123</code>, <code>doc123</code>, <code>ops123</code>, <code>dept123</code>, <code>team123</code>, <code>pres123</code>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
 var KEY='training_records_v2', rows=[], editing=null, pending=[], curCert='';
@@ -512,9 +615,55 @@ function showPosInfo(){var p=positions.filter(function(x){return x.name===$('pos
 function renderPos(){$('posBody').innerHTML=positions.length?positions.map(function(p){return '<tr><td style="white-space:nowrap"><button class="lnk" data-pe="'+p.id+'">Edit</button><button class="del" data-pd="'+p.id+'">Delete</button></td><td>'+esc(p.name)+'</td><td>'+esc(posWhere(p))+'</td><td>'+(p.types.length?esc(p.types.join(', ')):'<span class="sub">None</span>')+'</td></tr>'}).join(''):'<tr><td colspan="4" class="empty">No positions yet.</td></tr>'}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(rows));return true}catch(e){$('recMsg').className='msg err';$('recMsg').textContent='Browser storage is full or blocked, so changes may not be kept. Try removing some certificate pictures.';return false}}
 
-function show(t){if(t==='cal')calRender();if(t==='dash')dashRender();if(t==='nc')ncRender();if(t==='tna')tnaOpen();if(t==='cq')fillCqPos();if(t==='ct')ctOpen();if(t==='ca')caRender();['records','add','pos','tna','bulk','cq','ct','ca','doc','acc','teams','dash','nc','cal'].forEach(function(s){$(s).hidden=s!==t});
-  document.querySelectorAll('.tab').forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===t)})}
-document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){show(b.dataset.t)}});
+function show(t){
+  var currentCfg = ROLE_CONFIG[mhcCurrentRole] || ROLE_CONFIG.employee;
+  if (!currentCfg.allowedTabs.includes(t)) {
+    t = currentCfg.defaultTab;
+  }
+
+  if(t==='cal')calRender();
+  if(t==='dash')dashRender();
+  if(t==='nc')ncRender();
+  if(t==='tna')tnaOpen();
+  if(t==='cq')fillCqPos();
+  if(t==='ct')ctOpen();
+  if(t==='ca')caRender();
+
+  ['records','add','pos','tna','bulk','cq','ct','ca','doc','acc','teams','dash','nc','cal'].forEach(function(s){
+    var el = $(s);
+    if (el) el.hidden = s !== t;
+  });
+
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.setAttribute('aria-selected', b.dataset.t === t);
+  });
+
+  var secEl = $(t);
+  if (secEl) {
+    var isViewOnly = currentCfg.viewOnlyTabs.indexOf(t) > -1;
+    secEl.setAttribute('data-view-only', isViewOnly ? 'true' : 'false');
+    
+    var existingBanner = secEl.querySelector('.view-only-banner');
+    if (isViewOnly) {
+      if (!existingBanner) {
+        var banner = document.createElement('div');
+        banner.className = 'view-only-banner';
+        banner.innerHTML = '👁️ <b>Viewing Only Mode:</b> You have read-only access to this module. (Restricted for ' + esc(currentCfg.name) + ')';
+        secEl.insertBefore(banner, secEl.firstChild);
+      }
+    } else {
+      if (existingBanner) existingBanner.remove();
+    }
+  }
+}
+document.querySelectorAll('.tab').forEach(function(b){
+  b.onclick=function(){
+    var currentCfg = ROLE_CONFIG[mhcCurrentRole] || ROLE_CONFIG.employee;
+    if (currentCfg.allowedTabs.indexOf(b.dataset.t) > -1) {
+      show(b.dataset.t);
+    }
+  };
+});
 
 function render(){
   var q=$('q').value.toLowerCase().trim(), st=$('fStatus').value, co=$('fCompany').value;
@@ -1238,8 +1387,349 @@ $('calBody').onclick=function(e){var d=e.target.dataset;
 $('calBody').onchange=function(e){var id=e.target.dataset.cs;if(!id)return;var x=cal.filter(function(y){return y.id===id})[0];if(!x)return;
   x.status=e.target.value;if(x.status==='Completed'&&!x.actual)x.actual=tmToday();x.updatedAt=new Date().toISOString();calSave();calRender()};
 
-load();loadPos();tmFixSaved();loadDoc();loadAcc();tmLoad();ncLoad();calLoad();loadCq();loadTests();loadCustomTypes();buildPosTypes();fillPosSelect();renderPos();clearForm();render();show('dash');
+
+/* ========================================================
+   MAY HARVEST CORPORATION - ROLE-BASED ACCESS CONTROL (RBAC)
+   Based on Official Company Access Matrix
+   ======================================================== */
+var ROLE_CONFIG = {
+  admin: {
+    key: 'admin',
+    name: 'Administrator',
+    label: 'Admin',
+    badgeText: 'Admin (All Access)',
+    allowedTabs: ['dash', 'pos', 'cal', 'add', 'bulk', 'records', 'tna', 'cq', 'ct', 'ca', 'teams', 'nc', 'doc', 'acc'],
+    viewOnlyTabs: [],
+    defaultTab: 'dash',
+    color: '#2563eb',
+    showStats: true,
+    canAssessTests: true
+  },
+  hr: {
+    key: 'hr',
+    name: 'Human Resources',
+    label: 'HR',
+    badgeText: 'HR (All Access except Doc Control & Accounts)',
+    allowedTabs: ['dash', 'pos', 'cal', 'add', 'bulk', 'records', 'tna', 'cq', 'ct', 'ca', 'teams', 'nc'],
+    viewOnlyTabs: [],
+    defaultTab: 'dash',
+    color: '#7c3aed',
+    showStats: true,
+    canAssessTests: true
+  },
+  doccontrol: {
+    key: 'doccontrol',
+    name: 'Document Control',
+    label: 'Document Control',
+    badgeText: 'Document Control (Document Control Only)',
+    allowedTabs: ['doc'],
+    viewOnlyTabs: [],
+    defaultTab: 'doc',
+    color: '#0891b2',
+    showStats: false,
+    canAssessTests: false
+  },
+  opsmanager: {
+    key: 'opsmanager',
+    name: 'Operations Manager',
+    label: 'Operations Manager',
+    badgeText: 'Operations Manager',
+    allowedTabs: ['dash', 'tna', 'ct', 'ca', 'teams', 'nc'],
+    viewOnlyTabs: ['dash', 'tna', 'teams', 'nc'],
+    defaultTab: 'dash',
+    color: '#d97706',
+    showStats: true,
+    canAssessTests: true
+  },
+  depthead: {
+    key: 'depthead',
+    name: 'Department Head',
+    label: 'Department Head',
+    badgeText: 'Department Head',
+    allowedTabs: ['dash', 'tna', 'ct', 'ca'],
+    viewOnlyTabs: ['dash', 'tna'],
+    defaultTab: 'dash',
+    color: '#059669',
+    showStats: true,
+    canAssessTests: true
+  },
+  teamleader: {
+    key: 'teamleader',
+    name: 'Team Leader',
+    label: 'Team Leader',
+    badgeText: 'Team Leader',
+    allowedTabs: ['tna', 'ct', 'ca'],
+    viewOnlyTabs: ['tna'],
+    defaultTab: 'ct',
+    color: '#0284c7',
+    showStats: false,
+    canAssessTests: true
+  },
+  employee: {
+    key: 'employee',
+    name: 'Employees (No need to log-in)',
+    label: 'Employees (No need to log-in)',
+    badgeText: 'Employees (No need to log-in)',
+    allowedTabs: ['ct'],
+    viewOnlyTabs: [],
+    defaultTab: 'ct',
+    color: '#64748b',
+    showStats: false,
+    canAssessTests: false
+  },
+  president: {
+    key: 'president',
+    name: 'President',
+    label: 'President',
+    badgeText: 'President (Viewing Only)',
+    allowedTabs: ['dash', 'tna', 'teams', 'nc'],
+    viewOnlyTabs: ['dash', 'tna', 'teams', 'nc'],
+    defaultTab: 'dash',
+    color: '#475569',
+    showStats: true,
+    canAssessTests: false
+  }
+};
+
+var DEFAULT_CREDENTIALS = {
+  admin: { user: 'admin', pass: 'admin123', role: 'admin', name: 'System Administrator' },
+  hr: { user: 'hr', pass: 'hr123', role: 'hr', name: 'HR Department' },
+  doccontrol: { user: 'doccontrol', pass: 'doc123', role: 'doccontrol', name: 'Document Controller' },
+  opsmanager: { user: 'opsmanager', pass: 'ops123', role: 'opsmanager', name: 'Operations Manager' },
+  depthead: { user: 'depthead', pass: 'dept123', role: 'depthead', name: 'Department Head' },
+  teamleader: { user: 'teamleader', pass: 'team123', role: 'teamleader', name: 'Team Leader' },
+  president: { user: 'president', pass: 'pres123', role: 'president', name: 'Company President' }
+};
+
+var mhcCurrentRole = 'employee';
+var mhcCurrentUser = null;
+
+function loadAuthSession() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('mhc_auth_session_v2') || 'null');
+    if (saved && saved.role && ROLE_CONFIG[saved.role]) {
+      mhcCurrentRole = saved.role;
+      mhcCurrentUser = saved.user || null;
+      return;
+    }
+  } catch(e) {}
+  mhcCurrentRole = 'employee';
+  mhcCurrentUser = null;
+}
+
+function saveAuthSession(role, user) {
+  try {
+    if (role === 'employee') {
+      localStorage.removeItem('mhc_auth_session_v2');
+    } else {
+      localStorage.setItem('mhc_auth_session_v2', JSON.stringify({ role: role, user: user, time: Date.now() }));
+    }
+  } catch(e) {}
+  mhcCurrentRole = role;
+  mhcCurrentUser = user;
+}
+
+function applyRoleRestrictions(preferredTab) {
+  var cfg = ROLE_CONFIG[mhcCurrentRole] || ROLE_CONFIG.employee;
+
+  // 1. Update Header Status Pill
+  var pill = $('authStatusPill');
+  var dot = $('authStatusDot');
+  var txt = $('authStatusText');
+  var btn = $('btnAuthToggle');
+
+  if (pill && dot && txt && btn) {
+    if (mhcCurrentRole === 'employee') {
+      pill.className = 'mhc-auth-pill';
+      dot.style.background = '#64748b';
+      txt.textContent = 'Employees (No need to log-in)';
+      btn.innerHTML = '🔐 Staff Login';
+      btn.className = 'btn';
+    } else {
+      pill.className = 'mhc-auth-pill logged-in';
+      dot.style.background = cfg.color || '#10b981';
+      var uName = mhcCurrentUser ? mhcCurrentUser : cfg.label;
+      txt.textContent = cfg.name + ' (' + uName + ')';
+      btn.innerHTML = '🚪 Switch Role / Sign Out';
+      btn.className = 'btn sec';
+    }
+  }
+
+  // 2. Hide restricted tabs completely to avoid confusion (Image 1 requirement)
+  document.querySelectorAll('.tab').forEach(function(b) {
+    var t = b.dataset.t;
+    var allowed = cfg.allowedTabs.indexOf(t) > -1;
+    if (allowed) {
+      b.removeAttribute('data-restricted');
+      b.style.display = '';
+    } else {
+      b.setAttribute('data-restricted', 'true');
+      b.style.display = 'none';
+    }
+  });
+
+  // 3. Stats visibility (Image requirement: employees/doc control focus on their module)
+  var statsEl = document.querySelector('.stats');
+  if (statsEl) {
+    statsEl.style.display = cfg.showStats ? '' : 'none';
+  }
+
+  // 4. Competency Test: Assessor Section
+  var evalSec = $('ctEvalSection');
+  if (evalSec) {
+    evalSec.style.display = cfg.canAssessTests ? '' : 'none';
+  }
+
+  // 5. Select active tab
+  var targetTab = preferredTab;
+  if (!targetTab || cfg.allowedTabs.indexOf(targetTab) === -1) {
+    targetTab = cfg.defaultTab;
+  }
+  show(targetTab);
+}
+
+function openAuthModal() {
+  var m = $('authModal');
+  if (m) {
+    m.style.display = 'flex';
+    $('loginMsg').textContent = '';
+    renderQuickRoleButtons();
+    $('loginUser').value = '';
+    $('loginPass').value = '';
+    $('loginUser').focus();
+  }
+}
+
+function closeAuthModal() {
+  var m = $('authModal');
+  if (m) m.style.display = 'none';
+}
+
+function renderQuickRoleButtons() {
+  var container = $('quickRoleButtons');
+  if (!container) return;
+  var roles = [
+    { key: 'admin', icon: '👑', label: 'Admin' },
+    { key: 'hr', icon: '👥', label: 'HR' },
+    { key: 'doccontrol', icon: '📋', label: 'Doc Control' },
+    { key: 'opsmanager', icon: '⚙️', label: 'Operations Mgr' },
+    { key: 'depthead', icon: '🏢', label: 'Dept Head' },
+    { key: 'teamleader', icon: '🎖️', label: 'Team Leader' },
+    { key: 'president', icon: '👔', label: 'President' }
+  ];
+
+  container.innerHTML = roles.map(function(r) {
+    return '<button type="button" class="quick-role-btn" data-role="' + r.key + '">' + r.icon + ' ' + r.label + '</button>';
+  }).join('') + '<button type="button" class="quick-role-btn" data-role="employee" style="background:#f1f5f9; color:#475569;">👤 Employee (Guest)</button>';
+
+  container.onclick = function(e) {
+    var btn = e.target.closest('[data-role]');
+    if (!btn) return;
+    var r = btn.dataset.role;
+    if (r === 'employee') {
+      saveAuthSession('employee', null);
+      applyRoleRestrictions();
+      closeAuthModal();
+      return;
+    }
+    var cred = DEFAULT_CREDENTIALS[r];
+    if (cred) {
+      $('loginUser').value = cred.user;
+      $('loginPass').value = cred.pass;
+      performLogin(cred.user, cred.pass);
+    }
+  };
+}
+
+function performLogin(u, p) {
+  var msg = $('loginMsg');
+  u = (u || '').trim().toLowerCase();
+  p = (p || '').trim();
+
+  if (!u) {
+    msg.className = 'msg err';
+    msg.textContent = 'Please enter your username.';
+    return;
+  }
+
+  var matchedRole = null;
+  var matchedName = null;
+
+  for (var k in DEFAULT_CREDENTIALS) {
+    var c = DEFAULT_CREDENTIALS[k];
+    if (c.user.toLowerCase() === u) {
+      if (c.pass === p || !p) {
+        matchedRole = c.role;
+        matchedName = c.name;
+        break;
+      } else {
+        msg.className = 'msg err';
+        msg.textContent = 'Incorrect password for ' + c.name + '.';
+        return;
+      }
+    }
+  }
+
+  if (!matchedRole && Array.isArray(accts)) {
+    var dyn = accts.find(function(a) {
+      return a.user && a.user.toLowerCase() === u && a.stat !== 'Inactive';
+    });
+    if (dyn) {
+      var rStr = (dyn.role || '').toLowerCase();
+      if (rStr.includes('admin')) matchedRole = 'admin';
+      else if (rStr.includes('hr')) matchedRole = 'hr';
+      else if (rStr.includes('doc')) matchedRole = 'doccontrol';
+      else if (rStr.includes('ops') || rStr.includes('operation')) matchedRole = 'opsmanager';
+      else if (rStr.includes('dept') || rStr.includes('head')) matchedRole = 'depthead';
+      else if (rStr.includes('leader') || rStr.includes('team')) matchedRole = 'teamleader';
+      else if (rStr.includes('pres')) matchedRole = 'president';
+      else matchedRole = 'employee';
+      matchedName = dyn.name || dyn.user;
+    }
+  }
+
+  if (matchedRole && ROLE_CONFIG[matchedRole]) {
+    saveAuthSession(matchedRole, u);
+    applyRoleRestrictions();
+    closeAuthModal();
+  } else {
+    msg.className = 'msg err';
+    msg.textContent = 'Account not recognized. Try one of the official roles below.';
+  }
+}
+
+// Attach Auth UI Event Handlers
+if ($('btnAuthToggle')) $('btnAuthToggle').onclick = openAuthModal;
+if ($('authModalClose')) $('authModalClose').onclick = closeAuthModal;
+if ($('loginCancel')) $('loginCancel').onclick = closeAuthModal;
+if ($('loginGuestBtn')) $('loginGuestBtn').onclick = function() {
+  saveAuthSession('employee', null);
+  applyRoleRestrictions();
+  closeAuthModal();
+};
+if ($('loginSubmit')) $('loginSubmit').onclick = function() {
+  performLogin($('loginUser').value, $('loginPass').value);
+};
+if ($('loginPass')) $('loginPass').onkeydown = function(e) {
+  if (e.key === 'Enter') performLogin($('loginUser').value, $('loginPass').value);
+};
+if ($('loginUser')) $('loginUser').onkeydown = function(e) {
+  if (e.key === 'Enter') $('loginPass').focus();
+};
+
+window.mhcReloadAll = function(keepTab) {
+  load();loadPos();tmFixSaved();loadDoc();loadAcc();tmLoad();ncLoad();calLoad();loadCq();loadTests();loadCustomTypes();buildPosTypes();fillPosSelect();renderPos();render();
+  if (keepTab) {
+    var cur = document.querySelector('.tab[aria-selected="true"]');
+    if (cur) show(cur.dataset.t);
+  } else {
+    show('dash');
+  }
+};
+
+window.mhcReloadAll(false);
 })();
 </script>
+<script src="cloud-sync.js"></script>
 </body>
 </html>
