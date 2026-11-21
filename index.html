@@ -569,9 +569,7 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
         Select Official Account:
       </div>
       <div id="quickRoleButtons" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-      <div style="margin-top:8px; font-size:.74rem; color:var(--muted); line-height:1.4;">
-        Default passwords: <code>admin123</code>, <code>hr123</code>, <code>doc123</code>, <code>ops123</code>, <code>dept123</code>, <code>team123</code>, <code>pres123</code>
-      </div>
+      
     </div>
   </div>
 </div>
@@ -1502,13 +1500,13 @@ var ROLE_CONFIG = {
 };
 
 var DEFAULT_CREDENTIALS = {
-  admin: { user: 'admin', pass: 'admin123', role: 'admin', name: 'System Administrator' },
-  hr: { user: 'hr', pass: 'hr123', role: 'hr', name: 'HR Department' },
-  doccontrol: { user: 'doccontrol', pass: 'doc123', role: 'doccontrol', name: 'Document Controller' },
-  opsmanager: { user: 'opsmanager', pass: 'ops123', role: 'opsmanager', name: 'Operations Manager' },
-  depthead: { user: 'depthead', pass: 'dept123', role: 'depthead', name: 'Department Head' },
-  teamleader: { user: 'teamleader', pass: 'team123', role: 'teamleader', name: 'Team Leader' },
-  president: { user: 'president', pass: 'pres123', role: 'president', name: 'Company President' }
+  admin: { user: 'admin', pass: 'MHC_Admin2026+', legacyPass: 'admin123', role: 'admin', name: 'System Administrator' },
+  hr: { user: 'hr', pass: 'MHC_Hr2026+', legacyPass: 'hr123', role: 'hr', name: 'HR Department' },
+  doccontrol: { user: 'doccontrol', pass: 'MHC_Doc2026+', legacyPass: 'doc123', role: 'doccontrol', name: 'Document Controller' },
+  opsmanager: { user: 'opsmanager', pass: 'MHC_Ops2026+', legacyPass: 'ops123', role: 'opsmanager', name: 'Operations Manager' },
+  depthead: { user: 'depthead', pass: 'MHC_Dept2026+', legacyPass: 'dept123', role: 'depthead', name: 'Department Head' },
+  teamleader: { user: 'teamleader', pass: 'MHC_Tl2026+', legacyPass: 'team123', role: 'teamleader', name: 'Team Leader' },
+  president: { user: 'president', pass: 'MHC_Pres2026+', legacyPass: 'pres123', role: 'president', name: 'Company President' }
 };
 
 var mhcCurrentRole = 'employee';
@@ -1744,7 +1742,7 @@ function performLogin(u, p) {
   for (var k in DEFAULT_CREDENTIALS) {
     var c = DEFAULT_CREDENTIALS[k];
     if (c.user.toLowerCase() === u) {
-      if (c.pass === p) {
+      if (c.pass === p || c.legacyPass === p) {
         matchedRole = c.role;
         matchedName = c.name;
         break;
