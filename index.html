@@ -527,36 +527,43 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
   <div class="mhc-modal-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
       <h3 style="margin:0; font-size:1.05rem; color:var(--text); display:flex; align-items:center; gap:8px;">
-        <span>🔐 Staff Portal Sign In</span>
+        <span>🔐 Staff Portal Sign In / Switch Role</span>
       </h3>
       <button type="button" id="authModalClose" style="background:none; border:none; font-size:1.4rem; color:var(--muted); cursor:pointer;">&times;</button>
     </div>
     <p class="sub" style="margin-top:0; font-size:.84rem;">
-      Select an official role or enter your credentials to access your designated system portal.
+      Select an official role and authenticate with your password. Role changes require password confirmation.
     </p>
 
     <div style="margin-bottom:10px;">
-      <label>Username</label>
-      <input id="loginUser" placeholder="e.g. admin, hr, doccontrol, opsmanager, depthead, teamleader, president">
+      <label>Role / Username *</label>
+      <input id="loginUser" placeholder="Select role below or enter username (e.g. admin, hr, opsmanager...)" autocomplete="username">
     </div>
-    <div style="margin-bottom:12px;">
-      <label>Password</label>
-      <input id="loginPass" type="password" placeholder="Enter password (default: admin123, hr123, doc123...)">
+    <div style="margin-bottom:8px;">
+      <label>Password *</label>
+      <input id="loginPass" type="password" placeholder="Enter account password" autocomplete="current-password">
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <label class="chk" style="font-size:.82rem; cursor:pointer;">
+        <input type="checkbox" id="loginRemember"> Remember password on this device
+      </label>
+      <button type="button" id="loginForgetBtn" class="lnk" style="font-size:.76rem; display:none; color:var(--bad); padding:0;">Forget saved password</button>
     </div>
 
     <div id="loginMsg" class="msg" style="margin-bottom:12px;"></div>
 
     <div class="row" style="margin-top:0; justify-content:space-between; align-items:center;">
-      <button type="button" class="btn sec" id="loginGuestBtn">Stay as Employee (No login)</button>
+      <button type="button" class="btn sec" id="loginGuestBtn">Switch to Employee (No login)</button>
       <div style="display:flex; gap:8px;">
-        <button type="button" class="btn sec" id="loginCancel">Close</button>
+        <button type="button" class="btn sec" id="loginCancel">Cancel</button>
         <button type="button" class="btn" id="loginSubmit">Sign In</button>
       </div>
     </div>
 
     <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--line);">
       <div style="font-size:.76rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">
-        Quick Role Selection (Official Accounts):
+        Select Official Account:
       </div>
       <div id="quickRoleButtons" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
       <div style="margin-top:8px; font-size:.74rem; color:var(--muted); line-height:1.4;">
@@ -1390,7 +1397,7 @@ $('calBody').onchange=function(e){var id=e.target.dataset.cs;if(!id)return;var x
 
 /* ========================================================
    MAY HARVEST CORPORATION - ROLE-BASED ACCESS CONTROL (RBAC)
-   Based on Official Company Access Matrix
+   Strict Authentication & Remember Password Engine
    ======================================================== */
 var ROLE_CONFIG = {
   admin: {
@@ -1503,6 +1510,37 @@ var DEFAULT_CREDENTIALS = {
 
 var mhcCurrentRole = 'employee';
 var mhcCurrentUser = null;
+var REMEMBER_STORAGE_KEY = 'mhc_saved_passwords_v2';
+
+function getRememberedPasswords() {
+  try {
+    return JSON.parse(localStorage.getItem(REMEMBER_STORAGE_KEY) || '{}');
+  } catch(e) {
+    return {};
+  }
+}
+
+function saveRememberedPassword(username, password, remember) {
+  try {
+    var store = getRememberedPasswords();
+    username = (username || '').toLowerCase().trim();
+    if (remember && password) {
+      store[username] = password;
+    } else {
+      delete store[username];
+    }
+    localStorage.setItem(REMEMBER_STORAGE_KEY, JSON.stringify(store));
+  } catch(e) {}
+}
+
+function forgetRememberedPassword(username) {
+  try {
+    var store = getRememberedPasswords();
+    username = (username || '').toLowerCase().trim();
+    delete store[username];
+    localStorage.setItem(REMEMBER_STORAGE_KEY, JSON.stringify(store));
+  } catch(e) {}
+}
 
 function loadAuthSession() {
   try {
@@ -1532,7 +1570,7 @@ function saveAuthSession(role, user) {
 function applyRoleRestrictions(preferredTab) {
   var cfg = ROLE_CONFIG[mhcCurrentRole] || ROLE_CONFIG.employee;
 
-  // 1. Update Header Status Pill
+  // 1. Header status pill
   var pill = $('authStatusPill');
   var dot = $('authStatusDot');
   var txt = $('authStatusText');
@@ -1555,7 +1593,7 @@ function applyRoleRestrictions(preferredTab) {
     }
   }
 
-  // 2. Hide restricted tabs completely to avoid confusion (Image 1 requirement)
+  // 2. Hide restricted tabs completely
   document.querySelectorAll('.tab').forEach(function(b) {
     var t = b.dataset.t;
     var allowed = cfg.allowedTabs.indexOf(t) > -1;
@@ -1568,7 +1606,7 @@ function applyRoleRestrictions(preferredTab) {
     }
   });
 
-  // 3. Stats visibility (Image requirement: employees/doc control focus on their module)
+  // 3. Stats visibility
   var statsEl = document.querySelector('.stats');
   if (statsEl) {
     statsEl.style.display = cfg.showStats ? '' : 'none';
@@ -1588,15 +1626,40 @@ function applyRoleRestrictions(preferredTab) {
   show(targetTab);
 }
 
+function checkUserRememberedPass(u) {
+  u = (u || '').toLowerCase().trim();
+  var savedMap = getRememberedPasswords();
+  var passInp = $('loginPass');
+  var remChk = $('loginRemember');
+  var forgetBtn = $('loginForgetBtn');
+
+  if (u && savedMap[u]) {
+    passInp.value = savedMap[u];
+    remChk.checked = true;
+    if (forgetBtn) forgetBtn.style.display = 'inline-block';
+  } else {
+    passInp.value = '';
+    remChk.checked = false;
+    if (forgetBtn) forgetBtn.style.display = 'none';
+  }
+}
+
 function openAuthModal() {
   var m = $('authModal');
-  if (m) {
-    m.style.display = 'flex';
-    $('loginMsg').textContent = '';
-    renderQuickRoleButtons();
-    $('loginUser').value = '';
-    $('loginPass').value = '';
+  if (!m) return;
+  m.style.display = 'flex';
+  $('loginMsg').textContent = '';
+  renderQuickRoleButtons();
+
+  // If already logged in, show current user or default to blank
+  var defaultUser = (mhcCurrentRole !== 'employee' && mhcCurrentUser) ? mhcCurrentUser : '';
+  $('loginUser').value = defaultUser;
+  checkUserRememberedPass(defaultUser);
+
+  if (!defaultUser) {
     $('loginUser').focus();
+  } else {
+    $('loginPass').focus();
   }
 }
 
@@ -1626,17 +1689,25 @@ function renderQuickRoleButtons() {
     var btn = e.target.closest('[data-role]');
     if (!btn) return;
     var r = btn.dataset.role;
+
     if (r === 'employee') {
+      if (mhcCurrentRole !== 'employee') {
+        if (!confirm('Switch to Employee mode? You will be signed out from your staff role.')) return;
+      }
       saveAuthSession('employee', null);
       applyRoleRestrictions();
       closeAuthModal();
       return;
     }
+
     var cred = DEFAULT_CREDENTIALS[r];
     if (cred) {
       $('loginUser').value = cred.user;
-      $('loginPass').value = cred.pass;
-      performLogin(cred.user, cred.pass);
+      checkUserRememberedPass(cred.user);
+      $('loginMsg').className = 'msg';
+      $('loginMsg').textContent = 'Selected role: ' + cred.name + '. Please enter or confirm password to sign in.';
+      $('loginPass').focus();
+      $('loginPass').select();
     }
   };
 }
@@ -1648,53 +1719,79 @@ function performLogin(u, p) {
 
   if (!u) {
     msg.className = 'msg err';
-    msg.textContent = 'Please enter your username.';
+    msg.textContent = 'Please enter your username or select an account.';
+    $('loginUser').focus();
+    return;
+  }
+
+  // Strict check: Password is REQUIRED
+  if (!p) {
+    msg.className = 'msg err';
+    msg.textContent = 'Password is required to authenticate into this role.';
+    $('loginPass').focus();
     return;
   }
 
   var matchedRole = null;
   var matchedName = null;
 
+  // 1. Check built-in official credentials
   for (var k in DEFAULT_CREDENTIALS) {
     var c = DEFAULT_CREDENTIALS[k];
     if (c.user.toLowerCase() === u) {
-      if (c.pass === p || !p) {
+      if (c.pass === p) {
         matchedRole = c.role;
         matchedName = c.name;
         break;
       } else {
         msg.className = 'msg err';
-        msg.textContent = 'Incorrect password for ' + c.name + '.';
+        msg.textContent = 'Incorrect password for ' + c.name + '. Please try again.';
+        $('loginPass').focus();
+        $('loginPass').select();
         return;
       }
     }
   }
 
+  // 2. Check accounts created in Accounts tab
   if (!matchedRole && Array.isArray(accts)) {
     var dyn = accts.find(function(a) {
       return a.user && a.user.toLowerCase() === u && a.stat !== 'Inactive';
     });
     if (dyn) {
-      var rStr = (dyn.role || '').toLowerCase();
-      if (rStr.includes('admin')) matchedRole = 'admin';
-      else if (rStr.includes('hr')) matchedRole = 'hr';
-      else if (rStr.includes('doc')) matchedRole = 'doccontrol';
-      else if (rStr.includes('ops') || rStr.includes('operation')) matchedRole = 'opsmanager';
-      else if (rStr.includes('dept') || rStr.includes('head')) matchedRole = 'depthead';
-      else if (rStr.includes('leader') || rStr.includes('team')) matchedRole = 'teamleader';
-      else if (rStr.includes('pres')) matchedRole = 'president';
-      else matchedRole = 'employee';
-      matchedName = dyn.name || dyn.user;
+      var expectedPass = dyn.pass || '123456';
+      if (p === expectedPass) {
+        var rStr = (dyn.role || '').toLowerCase();
+        if (rStr.includes('admin')) matchedRole = 'admin';
+        else if (rStr.includes('hr')) matchedRole = 'hr';
+        else if (rStr.includes('doc')) matchedRole = 'doccontrol';
+        else if (rStr.includes('ops') || rStr.includes('operation')) matchedRole = 'opsmanager';
+        else if (rStr.includes('dept') || rStr.includes('head')) matchedRole = 'depthead';
+        else if (rStr.includes('leader') || rStr.includes('team')) matchedRole = 'teamleader';
+        else if (rStr.includes('pres')) matchedRole = 'president';
+        else matchedRole = 'employee';
+        matchedName = dyn.name || dyn.user;
+      } else {
+        msg.className = 'msg err';
+        msg.textContent = 'Incorrect password for ' + (dyn.name || dyn.user) + '.';
+        $('loginPass').focus();
+        $('loginPass').select();
+        return;
+      }
     }
   }
 
   if (matchedRole && ROLE_CONFIG[matchedRole]) {
+    // Save or forget password based on checkbox
+    var remember = $('loginRemember').checked;
+    saveRememberedPassword(u, p, remember);
+
     saveAuthSession(matchedRole, u);
     applyRoleRestrictions();
     closeAuthModal();
   } else {
     msg.className = 'msg err';
-    msg.textContent = 'Account not recognized. Try one of the official roles below.';
+    msg.textContent = 'Account not recognized. Please check your username or select a role.';
   }
 }
 
@@ -1703,6 +1800,9 @@ if ($('btnAuthToggle')) $('btnAuthToggle').onclick = openAuthModal;
 if ($('authModalClose')) $('authModalClose').onclick = closeAuthModal;
 if ($('loginCancel')) $('loginCancel').onclick = closeAuthModal;
 if ($('loginGuestBtn')) $('loginGuestBtn').onclick = function() {
+  if (mhcCurrentRole !== 'employee') {
+    if (!confirm('Sign out and switch to Employee mode?')) return;
+  }
   saveAuthSession('employee', null);
   applyRoleRestrictions();
   closeAuthModal();
@@ -1713,10 +1813,25 @@ if ($('loginSubmit')) $('loginSubmit').onclick = function() {
 if ($('loginPass')) $('loginPass').onkeydown = function(e) {
   if (e.key === 'Enter') performLogin($('loginUser').value, $('loginPass').value);
 };
-if ($('loginUser')) $('loginUser').onkeydown = function(e) {
-  if (e.key === 'Enter') $('loginPass').focus();
-};
-
+if ($('loginUser')) {
+  $('loginUser').oninput = function() {
+    checkUserRememberedPass($('loginUser').value);
+  };
+  $('loginUser').onkeydown = function(e) {
+    if (e.key === 'Enter') $('loginPass').focus();
+  };
+}
+if ($('loginForgetBtn')) {
+  $('loginForgetBtn').onclick = function() {
+    var u = $('loginUser').value;
+    forgetRememberedPassword(u);
+    $('loginPass').value = '';
+    $('loginRemember').checked = false;
+    $('loginForgetBtn').style.display = 'none';
+    $('loginMsg').className = 'msg ok';
+    $('loginMsg').textContent = 'Saved password forgotten for ' + (u || 'this account') + '.';
+  };
+}
 window.mhcReloadAll = function(keepTab) {
   load();loadPos();tmFixSaved();loadDoc();loadAcc();tmLoad();ncLoad();calLoad();loadCq();loadTests();loadCustomTypes();buildPosTypes();fillPosSelect();renderPos();render();
   if (keepTab) {
