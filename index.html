@@ -541,7 +541,10 @@ textarea.cm{min-height:70px;font-family:inherit;font-size:.9rem}
     </div>
     <div style="margin-bottom:8px;">
       <label>Password *</label>
-      <input id="loginPass" type="password" placeholder="Enter account password" autocomplete="current-password">
+      <div style="position:relative; display:flex; align-items:center;">
+        <input id="loginPass" type="password" placeholder="Enter account password" autocomplete="current-password" style="padding-right:44px;">
+        <button type="button" id="loginPassToggle" style="position:absolute; right:8px; background:none; border:none; cursor:pointer; font-size:1.1rem; padding:4px 6px; color:var(--muted); line-height:1;" title="Show password" aria-label="Show password">👁️</button>
+      </div>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -1645,6 +1648,8 @@ function checkUserRememberedPass(u) {
 }
 
 function openAuthModal() {
+  if ($('loginPass')) $('loginPass').type = 'password';
+  if ($('loginPassToggle')) { $('loginPassToggle').textContent = '👁️'; $('loginPassToggle').title = 'Show password'; }
   var m = $('authModal');
   if (!m) return;
   m.style.display = 'flex';
@@ -1810,6 +1815,26 @@ if ($('loginGuestBtn')) $('loginGuestBtn').onclick = function() {
 if ($('loginSubmit')) $('loginSubmit').onclick = function() {
   performLogin($('loginUser').value, $('loginPass').value);
 };
+// Password visibility toggle (See password)
+if ($('loginPassToggle')) {
+  $('loginPassToggle').onclick = function() {
+    var inp = $('loginPass');
+    if (!inp) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      this.textContent = '🙈';
+      this.title = 'Hide password';
+      this.setAttribute('aria-label', 'Hide password');
+    } else {
+      inp.type = 'password';
+      this.textContent = '👁️';
+      this.title = 'Show password';
+      this.setAttribute('aria-label', 'Show password');
+    }
+    inp.focus();
+  };
+}
+
 if ($('loginPass')) $('loginPass').onkeydown = function(e) {
   if (e.key === 'Enter') performLogin($('loginUser').value, $('loginPass').value);
 };
